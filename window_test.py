@@ -1,8 +1,14 @@
 import wx
 
-app = wx.App()
+class Example(wx.Frame):
+  
+    def __init__(self, parent, id):
+	wx.Frame.__init__(self, parent, id, title='main', pos=(0,0), size=(1024,600))
+	
 
-frame = wx.Frame(None, -1, 'testwindow')
-frame.Show()
+app = wx.App()
+frame = Example(None, id=1)
+frame.ShowFullScreen(True)
+wx.CallLater(3000, frame.ShowFullScreen, False)
 
 app.MainLoop()
