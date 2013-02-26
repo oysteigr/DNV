@@ -3,14 +3,15 @@ import wx
 class MyButton(wx.Button):
 	def __init__(self, *a, **k):
 		wx.Button.__init__(self, size=(512,135), *a, **k)
-		self.SetBackgroundColour('#ff8c02')
+		self.SetBackgroundColour('#000000')
+		self.SetForegroundColour('#ff8c02')
  
 class MyForm(wx.Frame):
  
 	def __init__(self):
 	        wx.Frame.__init__(self, None, wx.ID_ANY, "Button Tutorial",size=(1024,600))
 	        panel = wx.Panel(self, wx.ID_ANY)
-		panel.SetBackgroundColour('Black')
+		panel.SetBackgroundColour('#ff8c02')
  
 	        button1 = MyButton(panel, id=wx.ID_ANY, label="SPEED",pos=(0,60))
 	        button2 = MyButton(panel, id=wx.ID_ANY, label="DISTANCE",pos=(512,60))
