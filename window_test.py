@@ -1,11 +1,15 @@
 import wx
+import time
 #General comment
+
+MAINCOLOR = '#ff8c02'
+BACKCOLOR = '#000000'
 
 class MyButton(wx.Button):
 	def __init__(self, *a, **k):
 		wx.Button.__init__(self, size=(512,200), *a, **k)
-		self.SetBackgroundColour('#000000')
-		self.SetForegroundColour('#ff8c02')
+		self.SetBackgroundColour(BACKCOLOR)
+		self.SetForegroundColour(MAINCOLOR)
 		font = wx.Font(20,wx.FONTFAMILY_DEFAULT,wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD)
 		self.SetFont(font)
 				
@@ -98,15 +102,27 @@ class MainFrame(wx.Frame):
 class TopPanel(wx.Panel):
 	def __init__(self, *args, **kw):
 		super(TopPanel, self).__init__(*args, **kw) 
+		self.SetForegroundColour(BACKCOLOR)
+		self.SetBackgroundColour(MAINCOLOR)
 		
-		self.SetBackgroundColour('#ff8c02')
+		self.timer = wx.Timer(self)
+		self.timer.Start(1000)
+		self.Bind(wx.EVT_TIMER, self.update, self.timer)
+		
+		self.text1 = wx.StaticText(self, -1, time.strftime('%H:%M:%S'), pos=(380,50))
+		self.text1.SetFont(wx.Font(40,wx.FONTFAMILY_DEFAULT,wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD))
+		
+	def update(self, event):
+
+		self.text1.SetLabel(time.strftime('%H:%M:%S'))
+		
 	
 	
 class MainPanel(wx.Panel):
 	def __init__(self, *args, **kw):
 		super(MainPanel, self).__init__(*args, **kw) 
 		
-		self.SetBackgroundColour('#000000')
+		self.SetBackgroundColour(MAINCOLOR)
 
 
 class SpeedPanel(wx.Panel):
@@ -117,7 +133,7 @@ class SpeedPanel(wx.Panel):
 		text1.Centre(wx.HORIZONTAL)
 		text1.SetFont(wx.Font(20,wx.FONTFAMILY_DEFAULT,wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD))
 		
-		self.SetBackgroundColour('#000000')
+		self.SetBackgroundColour(BACKCOLOR)
 		self.Hide()
 
 		
@@ -129,7 +145,7 @@ class DistancePanel(wx.Panel):
 		text1.Centre(wx.HORIZONTAL)
 		text1.SetFont(wx.Font(20,wx.FONTFAMILY_DEFAULT,wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD))
 		
-		self.SetBackgroundColour('#000000') 
+		self.SetBackgroundColour(BACKCOLOR)
 		self.Hide()
 	
 		
@@ -141,7 +157,7 @@ class EnergyPanel(wx.Panel):
 		text1.Centre(wx.HORIZONTAL)
 		text1.SetFont(wx.Font(20,wx.FONTFAMILY_DEFAULT,wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD))
 		
-		self.SetBackgroundColour('#000000') 
+		self.SetBackgroundColour(BACKCOLOR)
 		self.Hide()
 	
 		
@@ -153,7 +169,7 @@ class SolarPanel(wx.Panel):
 		text1.Centre(wx.HORIZONTAL)
 		text1.SetFont(wx.Font(20,wx.FONTFAMILY_DEFAULT,wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD))
 		
-		self.SetBackgroundColour('#000000') 
+		self.SetBackgroundColour(BACKCOLOR)
 		self.Hide()
 	
 		
@@ -165,7 +181,7 @@ class GpsPanel(wx.Panel):
 		text1.Centre(wx.HORIZONTAL)
 		text1.SetFont(wx.Font(20,wx.FONTFAMILY_DEFAULT,wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD))
 		
-		self.SetBackgroundColour('#000000') 
+		self.SetBackgroundColour(BACKCOLOR)
 		self.Hide()
 	
 		
@@ -177,7 +193,7 @@ class MusicPanel(wx.Panel):
 		text1.Centre(wx.HORIZONTAL)
 		text1.SetFont(wx.Font(20,wx.FONTFAMILY_DEFAULT,wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD))
 		
-		self.SetBackgroundColour('#000000') 
+		self.SetBackgroundColour(BACKCOLOR)
 		self.Hide()
 		
 # Run the program
