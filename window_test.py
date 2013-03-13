@@ -1,5 +1,7 @@
 import wx
 import time
+import os
+import sys
 #General comment
 
 MAINCOLOR = '#ff8c02'
@@ -17,7 +19,7 @@ class MainFrame(wx.Frame):
 
 	def __init__(self):
 		wx.Frame.__init__(self, None, wx.ID_ANY, "MainFrame",size=(1024,768))
-		
+				
 		self.panel_top = TopPanel(self, wx.ID_ANY, size=(1024,168), pos=(0,0))
 		self.panel_main = MainPanel(self, wx.ID_ANY, size=(1024,600), pos=(0,168))
 		self.panel_speed = SpeedPanel(self, wx.ID_ANY, size=(1024,600), pos=(0,168))
@@ -26,7 +28,9 @@ class MainFrame(wx.Frame):
 		self.panel_solar = SolarPanel(self, wx.ID_ANY, size=(1024,600), pos=(0,168))
 		self.panel_gps = GpsPanel(self, wx.ID_ANY, size=(1024,600), pos=(0,168))
 		self.panel_music = MusicPanel(self, wx.ID_ANY, size=(1024,600), pos=(0,168))
-			
+		self.SetCursor( wx.StockCursor(wx.CURSOR_BLANK) )
+		cursor = wx.StockCursor(wx.CURSOR_BLANK)
+		self.SetCursor(cursor)	
 		
 		#font = wx.Font(20,wx.FONTFAMILY_DEFAULT,wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD)
 		#panel.SetFont(font)
@@ -66,6 +70,7 @@ class MainFrame(wx.Frame):
 	def onButton1(self, event):
 		self.panel_main.Hide()
 		self.panel_speed.Show()
+
 
 	def onButton2(self, event):
 		self.panel_main.Hide()
@@ -198,8 +203,15 @@ class MusicPanel(wx.Panel):
 		
 # Run the program
 if __name__ == "__main__":
+	os.system('clear')
+	os.system('setterm -cursor off')
 	app = wx.App(False)
 	frame = MainFrame()
-	frame.Show()
-#	frame.ShowFullScreen(True)
+	
+#	frame.Show()
+	
+	frame.ShowFullScreen(True)
+	cursor = wx.StockCursor(wx.CURSOR_BLANK)
+	frame.SetCursor(cursor)	
 	app.MainLoop()
+	
