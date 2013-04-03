@@ -10,8 +10,9 @@ from random import randrange
 
 
 
-MAINCOLOR = '#ff8c02'
-BACKCOLOR = '#000000'
+MAINCOLOR = '#72CBD2'
+BACKCOLOR = '#0E1A26'
+CONTCOLOR = '#FBB034'
 
 def updateGraph(vector, value):
 	vector.append(value)
@@ -131,7 +132,7 @@ class TopPanel(wx.Panel):
 		self.SetBackgroundColour(MAINCOLOR)
 		
 		self.timer = wx.Timer(self)
-		self.timer.Start(100)
+		self.timer.Start(1000)
 		self.Bind(wx.EVT_TIMER, self.update, self.timer)
 		
 		self.text1 = wx.StaticText(self, -1, time.strftime('%H:%M:%S'), pos=(380,50))
