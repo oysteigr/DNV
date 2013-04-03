@@ -1,11 +1,41 @@
 import wx
 import time
 import os
-import sys
-#General comment
+import wxmpl
+import matplotlib.pyplot as plt
+import matplotlib.mlab as mlab
+import numpy as np
+import math
+
+
 
 MAINCOLOR = '#ff8c02'
 BACKCOLOR = '#000000'
+
+mu, sigma = 100, 15
+x = mu + sigma * np.random.randn(10000)
+
+fig = plt.figure()
+ax = fig.add_subplot(111)
+
+# the histogram of the data
+n, bins, patches = ax.hist(x, 50, normed=1, facecolor='green', alpha=0.75)
+
+# hist uses np.histogram under the hood to create 'n' and 'bins'.
+# np.histogram returns the bin edges, so there will be 50 probability
+# density values in n, 51 bin edges in bins and 50 patches.  To get
+# everything lined up, we'll compute the bin centers
+bincenters = 0.5*(bins[1:]+bins[:-1])
+# add a 'best fit' line for the normal PDF
+y = mlab.normpdf( bincenters, mu, sigma)
+l = ax.plot(bincenters, y, 'r--', linewidth=1)
+
+ax.set_xlabel('Smarts')
+ax.set_ylabel('Probability')
+#ax.set_title(r'$\mathrm{Histogram\ of\ IQ:}\ \mu=100,\ \sigma=15$')
+ax.set_xlim(40, 160)
+ax.set_ylim(0, 0.03)
+ax.grid(True)
 
 class MyButton(wx.Button):
 	def __init__(self, *a, **k):
@@ -31,9 +61,8 @@ class MainFrame(wx.Frame):
 		self.SetCursor( wx.StockCursor(wx.CURSOR_BLANK) )
 		cursor = wx.StockCursor(wx.CURSOR_BLANK)
 		self.SetCursor(cursor)	
-		
-		#font = wx.Font(20,wx.FONTFAMILY_DEFAULT,wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD)
-		#panel.SetFont(font)
+			
+
 		
 		button1 = MyButton(self.panel_main, id=wx.ID_ANY, label="SPEED",pos=(0,0))
 		button2 = MyButton(self.panel_main, id=wx.ID_ANY, label="DISTANCE",pos=(512,0))
@@ -174,6 +203,43 @@ class SolarPanel(wx.Panel):
 		text1.Centre(wx.HORIZONTAL)
 		text1.SetFont(wx.Font(20,wx.FONTFAMILY_DEFAULT,wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD))
 		
+		vbox = wx.BoxSizer(wx.VERTICAL);
+
+		x = np.arange(0.0, 2, 0.01)
+		y = np.sinc(math.pi*x)
+
+		
+		### Plot it ###
+		self.panel_plot = wxmpl.PlotPanel(self, wx.ID_ANY,size=(4.0, 3.7), dpi=96, cursor=False, location=False, crosshairs=False)
+		#self.panel_plot.SetBackgroundColour(wx.BLACK)
+		#self.panel_plot.figure.set_edgecolor('black')
+       	#self.panel_plot.figure.set_facecolor(wx.BLACK)
+		# All of WxMpl's plotting classes have a get_figure(),
+		# which returns the associated matplotlib Figure.
+		fig = self.panel_plot.get_figure()
+		
+	#	fig.set_edgecolor(MAINCOLOR)
+	#	fig.patch.set_facecolor(MAINCOLOR)
+	##	fig.set_alpha(0.2)
+		fig.patch.set_facecolor(BACKCOLOR)
+
+		# Create an Axes on the Figure to plot in.
+		axes = fig.gca()
+		# Plot the function
+		axes.plot(x, y, color=MAINCOLOR)
+		axes.patch.set_facecolor(BACKCOLOR)
+		axes.patch.set_edgecolor(MAINCOLOR)
+  		axes.spines['bottom'].set_color(MAINCOLOR)
+  		axes.spines['top'].set_color(MAINCOLOR)
+  		axes.spines['left'].set_color(MAINCOLOR)
+  		axes.spines['right'].set_color(MAINCOLOR)
+		axes.tick_params(axis='x', colors=MAINCOLOR)
+		axes.tick_params(axis='y', colors=MAINCOLOR)
+		#font = wx.Font(20,wx.FONTFAMILY_DEFAULT,wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD)
+		#panel.SetFont(font)
+		vbox.Add(self.panel_plot, 1, wx.EXPAND | wx.ALL, 20)
+		self.SetSizer(vbox);
+
 		self.SetBackgroundColour(BACKCOLOR)
 		self.Hide()
 	
@@ -203,8 +269,8 @@ class MusicPanel(wx.Panel):
 		
 # Run the program
 if __name__ == "__main__":
-	os.system('clear')
-	os.system('setterm -cursor off')
+	#os.system('clear')
+	#os.system('setterm -cursor off')
 	app = wx.App(False)
 	frame = MainFrame()
 	
