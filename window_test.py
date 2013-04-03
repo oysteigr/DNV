@@ -6,36 +6,27 @@ import matplotlib.pyplot as plt
 import matplotlib.mlab as mlab
 import numpy as np
 import math
+from random import randrange
 
 
 
 MAINCOLOR = '#ff8c02'
 BACKCOLOR = '#000000'
 
-mu, sigma = 100, 15
-x = mu + sigma * np.random.randn(10000)
+def updateGraph(vector, value):
+	vector.append(value)
+	del vector[0]
 
-fig = plt.figure()
-ax = fig.add_subplot(111)
+	return vector
 
-# the histogram of the data
-n, bins, patches = ax.hist(x, 50, normed=1, facecolor='green', alpha=0.75)
+def initGraph():
+	vector = []
 
-# hist uses np.histogram under the hood to create 'n' and 'bins'.
-# np.histogram returns the bin edges, so there will be 50 probability
-# density values in n, 51 bin edges in bins and 50 patches.  To get
-# everything lined up, we'll compute the bin centers
-bincenters = 0.5*(bins[1:]+bins[:-1])
-# add a 'best fit' line for the normal PDF
-y = mlab.normpdf( bincenters, mu, sigma)
-l = ax.plot(bincenters, y, 'r--', linewidth=1)
+	for i in xrange(60*10):
+		vector.append(0)
 
-ax.set_xlabel('Smarts')
-ax.set_ylabel('Probability')
-#ax.set_title(r'$\mathrm{Histogram\ of\ IQ:}\ \mu=100,\ \sigma=15$')
-ax.set_xlim(40, 160)
-ax.set_ylim(0, 0.03)
-ax.grid(True)
+	return vector
+
 
 class MyButton(wx.Button):
 	def __init__(self, *a, **k):
@@ -140,7 +131,7 @@ class TopPanel(wx.Panel):
 		self.SetBackgroundColour(MAINCOLOR)
 		
 		self.timer = wx.Timer(self)
-		self.timer.Start(1000)
+		self.timer.Start(100)
 		self.Bind(wx.EVT_TIMER, self.update, self.timer)
 		
 		self.text1 = wx.StaticText(self, -1, time.strftime('%H:%M:%S'), pos=(380,50))
@@ -203,46 +194,63 @@ class SolarPanel(wx.Panel):
 		text1.Centre(wx.HORIZONTAL)
 		text1.SetFont(wx.Font(20,wx.FONTFAMILY_DEFAULT,wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD))
 		
-		vbox = wx.BoxSizer(wx.VERTICAL);
+		box = wx.BoxSizer(wx.HORIZONTAL);
 
-		x = np.arange(0.0, 2, 0.01)
-		y = np.sinc(math.pi*x)
+
+
+		self.data = initGraph()
+
+		self.x = np.arange(-60, 0, 0.1)
+		self.y = self.data
 
 		
 		### Plot it ###
-		self.panel_plot = wxmpl.PlotPanel(self, wx.ID_ANY,size=(4.0, 3.7), dpi=96, cursor=False, location=False, crosshairs=False)
-		#self.panel_plot.SetBackgroundColour(wx.BLACK)
-		#self.panel_plot.figure.set_edgecolor('black')
-       	#self.panel_plot.figure.set_facecolor(wx.BLACK)
-		# All of WxMpl's plotting classes have a get_figure(),
-		# which returns the associated matplotlib Figure.
-		fig = self.panel_plot.get_figure()
+		self.panel_plot = wxmpl.PlotPanel(self, wx.ID_ANY,size=(6.0, 3.7), dpi=96, cursor=False, location=False, crosshairs=False)
+	
+		self.fig = self.panel_plot.get_figure()
 		
-	#	fig.set_edgecolor(MAINCOLOR)
-	#	fig.patch.set_facecolor(MAINCOLOR)
-	##	fig.set_alpha(0.2)
-		fig.patch.set_facecolor(BACKCOLOR)
 
-		# Create an Axes on the Figure to plot in.
-		axes = fig.gca()
+		self.fig.patch.set_facecolor(BACKCOLOR)
+
+	
+		self.axes = self.fig.gca()
 		# Plot the function
-		axes.plot(x, y, color=MAINCOLOR)
-		axes.patch.set_facecolor(BACKCOLOR)
-		axes.patch.set_edgecolor(MAINCOLOR)
-  		axes.spines['bottom'].set_color(MAINCOLOR)
-  		axes.spines['top'].set_color(MAINCOLOR)
-  		axes.spines['left'].set_color(MAINCOLOR)
-  		axes.spines['right'].set_color(MAINCOLOR)
-		axes.tick_params(axis='x', colors=MAINCOLOR)
-		axes.tick_params(axis='y', colors=MAINCOLOR)
+		self.line, = self.axes.plot(self.x, self.data, color=MAINCOLOR)
+		
+		#self.fig.ylim((0,60))
+		self.axes.autoscale(False)
+		#self.axes.ylim((0, 60)) 
+		self.axes.axis([0, -60, 0, 60])
+		self.axes.patch.set_facecolor(BACKCOLOR)
+		self.axes.patch.set_edgecolor(MAINCOLOR)
+  		self.axes.spines['bottom'].set_color(MAINCOLOR)
+  		self.axes.spines['top'].set_color(BACKCOLOR)
+  		self.axes.spines['left'].set_color(MAINCOLOR)
+  		self.axes.spines['right'].set_color(BACKCOLOR)
+		self.axes.tick_params(axis='x', colors=MAINCOLOR)
+		self.axes.tick_params(axis='y', colors=MAINCOLOR)
+
+
 		#font = wx.Font(20,wx.FONTFAMILY_DEFAULT,wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD)
 		#panel.SetFont(font)
-		vbox.Add(self.panel_plot, 1, wx.EXPAND | wx.ALL, 20)
-		self.SetSizer(vbox);
+		box.Add(self.panel_plot, 1, wx.ALL, 20)
+		self.SetSizer(box);
 
 		self.SetBackgroundColour(BACKCOLOR)
 		self.Hide()
-	
+
+		self.timer = wx.Timer(self)
+		self.timer.Start(100)
+		self.Bind(wx.EVT_TIMER, self.update_graph, self.timer)
+
+	def update_graph(self, event):
+		self.data = updateGraph(self.data, randrange(40)+10)
+
+		self.line.set_ydata(self.data)
+		#self.axes.clear()
+	#	self.axes.plot(self.x, self.data, color=MAINCOLOR)
+		self.fig.canvas.draw()
+		
 		
 class GpsPanel(wx.Panel):
 	def __init__(self, *args, **kw):
