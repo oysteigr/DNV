@@ -23,7 +23,7 @@ def updateGraph(vector, value):
 def initGraph():
 	vector = []
 
-	for i in xrange(60*10):
+	for i in xrange(60):
 		vector.append(0)
 
 	return vector
@@ -44,10 +44,10 @@ class MainFrame(wx.Frame):
 				
 		self.panel_top = TopPanel(self, wx.ID_ANY, size=(1024,168), pos=(0,0))
 		self.panel_main = MainPanel(self, wx.ID_ANY, size=(1024,600), pos=(0,168))
-		self.panel_speed = SpeedPanel(self, wx.ID_ANY, size=(1024,600), pos=(0,168))
-		self.panel_distance = DistancePanel(self, wx.ID_ANY, size=(1024,600), pos=(0,168))
+		self.panel_drive = DrivePanel(self, wx.ID_ANY, size=(1024,600), pos=(0,168))
+		self.panel_race = RacePanel(self, wx.ID_ANY, size=(1024,600), pos=(0,168))
 		self.panel_energy = EnergyPanel(self, wx.ID_ANY, size=(1024,600), pos=(0,168))
-		self.panel_solar = SolarPanel(self, wx.ID_ANY, size=(1024,600), pos=(0,168))
+		self.panel_phone = PhonePanel(self, wx.ID_ANY, size=(1024,600), pos=(0,168))
 		self.panel_gps = GpsPanel(self, wx.ID_ANY, size=(1024,600), pos=(0,168))
 		self.panel_music = MusicPanel(self, wx.ID_ANY, size=(1024,600), pos=(0,168))
 		self.SetCursor( wx.StockCursor(wx.CURSOR_BLANK) )
@@ -56,18 +56,18 @@ class MainFrame(wx.Frame):
 			
 
 		
-		button1 = MyButton(self.panel_main, id=wx.ID_ANY, label="SPEED",pos=(0,0))
-		button2 = MyButton(self.panel_main, id=wx.ID_ANY, label="DISTANCE",pos=(512,0))
+		button1 = MyButton(self.panel_main, id=wx.ID_ANY, label="DRIVING",pos=(0,0))
+		button2 = MyButton(self.panel_main, id=wx.ID_ANY, label="RACING",pos=(512,0))
 		button3 = MyButton(self.panel_main, id=wx.ID_ANY, label="ENERGY",pos=(0,200))
-		button4 = MyButton(self.panel_main, id=wx.ID_ANY, label="SOLAR PANEL",pos=(512,200))
-		button5 = MyButton(self.panel_main, id=wx.ID_ANY, label="GPS",pos=(0,400))
-		button6 = MyButton(self.panel_main, id=wx.ID_ANY, label="MUSIC",pos=(512,400))
+		button4 = MyButton(self.panel_main, id=wx.ID_ANY, label="NAVIGATE",pos=(512,200))
+		button5 = MyButton(self.panel_main, id=wx.ID_ANY, label="PHONE",pos=(0,400))
+		button6 = MyButton(self.panel_main, id=wx.ID_ANY, label="MEDIA",pos=(512,400))
 		
-		button1_home = MyButton(self.panel_speed, id=wx.ID_ANY, label="HOME",pos=(256,400))
-		button2_home = MyButton(self.panel_distance, id=wx.ID_ANY, label="HOME",pos=(256,400))
+		button1_home = MyButton(self.panel_drive, id=wx.ID_ANY, label="HOME",pos=(256,400))
+		button2_home = MyButton(self.panel_race, id=wx.ID_ANY, label="HOME",pos=(256,400))
 		button3_home = MyButton(self.panel_energy, id=wx.ID_ANY, label="HOME",pos=(256,400))
-		button4_home = MyButton(self.panel_solar, id=wx.ID_ANY, label="HOME",pos=(256,400))
-		button5_home = MyButton(self.panel_gps, id=wx.ID_ANY, label="HOME",pos=(256,400))
+		button4_home = MyButton(self.panel_gps, id=wx.ID_ANY, label="HOME",pos=(256,400))
+		button5_home = MyButton(self.panel_phone, id=wx.ID_ANY, label="HOME",pos=(256,400))
 		button6_home = MyButton(self.panel_music, id=wx.ID_ANY, label="HOME",pos=(256,400))
 
 		
@@ -90,12 +90,12 @@ class MainFrame(wx.Frame):
 #----------------------------------------------------------------------
 	def onButton1(self, event):
 		self.panel_main.Hide()
-		self.panel_speed.Show()
+		self.panel_drive.Show()
 
 
 	def onButton2(self, event):
 		self.panel_main.Hide()
-		self.panel_distance.Show()
+		self.panel_race.Show()
 
 	def onButton3(self, event):
 		self.panel_main.Hide()
@@ -103,7 +103,7 @@ class MainFrame(wx.Frame):
 
 	def onButton4(self, event):
 		self.panel_main.Hide()
-		self.panel_solar.Show()
+		self.panel_phone.Show()
 
 	def onButton5(self, event):
 		self.panel_main.Hide()
@@ -115,10 +115,10 @@ class MainFrame(wx.Frame):
 
 	def onButtonHome(self, event):
 		
-		self.panel_speed.Hide()
-		self.panel_distance.Hide()
+		self.panel_drive.Hide()
+		self.panel_race.Hide()
 		self.panel_energy.Hide()
-		self.panel_solar.Hide()
+		self.panel_phone.Hide()
 		self.panel_gps.Hide()
 		self.panel_music.Hide()
 				
@@ -151,9 +151,9 @@ class MainPanel(wx.Panel):
 		self.SetBackgroundColour(MAINCOLOR)
 
 
-class SpeedPanel(wx.Panel):
+class DrivePanel(wx.Panel):
 	def __init__(self, *args, **kw):
-		super(SpeedPanel, self).__init__(*args, **kw)
+		super(DrivePanel, self).__init__(*args, **kw)
 		
 		text1 = wx.StaticText(self, -1, "SPEED", pos=(0,200), style=wx.ALIGN_CENTRE)
 		text1.Centre(wx.HORIZONTAL)
@@ -163,9 +163,9 @@ class SpeedPanel(wx.Panel):
 		self.Hide()
 
 		
-class DistancePanel(wx.Panel):
+class RacePanel(wx.Panel):
 	def __init__(self, *args, **kw):
-		super(DistancePanel, self).__init__(*args, **kw)
+		super(RacePanel, self).__init__(*args, **kw)
 		
 		text1 = wx.StaticText(self, -1, "DISTANCE", pos=(0,200), style=wx.ALIGN_CENTRE)
 		text1.Centre(wx.HORIZONTAL)
@@ -187,9 +187,9 @@ class EnergyPanel(wx.Panel):
 		self.Hide()
 	
 		
-class SolarPanel(wx.Panel):
+class PhonePanel(wx.Panel):
 	def __init__(self, *args, **kw):
-		super(SolarPanel, self).__init__(*args, **kw)
+		super(PhonePanel, self).__init__(*args, **kw)
 		
 		text1 = wx.StaticText(self, -1, "SOLAR", pos=(0,200), style=wx.ALIGN_CENTRE)
 		text1.Centre(wx.HORIZONTAL)
@@ -201,12 +201,12 @@ class SolarPanel(wx.Panel):
 
 		self.data = initGraph()
 
-		self.x = np.arange(-60, 0, 0.1)
+		self.x = np.arange(-60, 0, 1)
 		self.y = self.data
 
 		
 		### Plot it ###
-		self.panel_plot = wxmpl.PlotPanel(self, wx.ID_ANY,size=(6.0, 3.7), dpi=96, cursor=False, location=False, crosshairs=False)
+		self.panel_plot = wxmpl.PlotPanel(self, wx.ID_ANY,size=(6.0, 8.0), dpi=48, cursor=False, location=False, crosshairs=False)
 	
 		self.fig = self.panel_plot.get_figure()
 		
@@ -216,7 +216,7 @@ class SolarPanel(wx.Panel):
 	
 		self.axes = self.fig.gca()
 		# Plot the function
-		self.line, = self.axes.plot(self.x, self.data, color=MAINCOLOR)
+		self.line, = self.axes.plot(self.x, self.data, color=CONTCOLOR)
 		
 		#self.fig.ylim((0,60))
 		self.axes.autoscale(False)
@@ -229,8 +229,8 @@ class SolarPanel(wx.Panel):
   		self.axes.spines['left'].set_color(MAINCOLOR)
   		self.axes.spines['right'].set_color(BACKCOLOR)
 		self.axes.tick_params(axis='x', colors=MAINCOLOR)
-		self.axes.tick_params(axis='y', colors=MAINCOLOR)
-
+		self.axes.tick_params(axis='y', colors=MAINCOLOR, size=20)
+		
 
 		#font = wx.Font(20,wx.FONTFAMILY_DEFAULT,wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD)
 		#panel.SetFont(font)
@@ -241,7 +241,7 @@ class SolarPanel(wx.Panel):
 		self.Hide()
 
 		self.timer = wx.Timer(self)
-		self.timer.Start(100)
+		self.timer.Start(1000)
 		self.Bind(wx.EVT_TIMER, self.update_graph, self.timer)
 
 	def update_graph(self, event):
