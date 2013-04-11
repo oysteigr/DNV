@@ -6,12 +6,14 @@ import matplotlib.pyplot as plt
 import matplotlib.mlab as mlab
 import numpy as np
 import math
+import datetime
 from random import randrange
 
 
 
 MAINCOLOR = '#72CBD2'
 BACKCOLOR = '#0E1A26'
+SCNDCOLOR = '#1B454B'
 CONTCOLOR = '#FBB034'
 
 def updateGraph(vector, value):
@@ -31,8 +33,8 @@ def initGraph():
 
 class MyButton(wx.Button):
 	def __init__(self, *a, **k):
-		wx.Button.__init__(self, size=(512,200), *a, **k)
-		self.SetBackgroundColour(BACKCOLOR)
+		wx.Button.__init__(self, *a, **k)
+		self.SetBackgroundColour(SCNDCOLOR)
 		self.SetForegroundColour(MAINCOLOR)
 		font = wx.Font(20,wx.FONTFAMILY_DEFAULT,wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD)
 		self.SetFont(font)
@@ -56,19 +58,19 @@ class MainFrame(wx.Frame):
 			
 
 		
-		button1 = MyButton(self.panel_main, id=wx.ID_ANY, label="DRIVING",pos=(0,0))
-		button2 = MyButton(self.panel_main, id=wx.ID_ANY, label="RACING",pos=(512,0))
-		button3 = MyButton(self.panel_main, id=wx.ID_ANY, label="ENERGY",pos=(0,200))
-		button4 = MyButton(self.panel_main, id=wx.ID_ANY, label="NAVIGATE",pos=(512,200))
-		button5 = MyButton(self.panel_main, id=wx.ID_ANY, label="PHONE",pos=(0,400))
-		button6 = MyButton(self.panel_main, id=wx.ID_ANY, label="MEDIA",pos=(512,400))
+		button1 = MyButton(self.panel_main, id=wx.ID_ANY, label="DRIVING",pos=(0,0),size=(512,200))
+		button2 = MyButton(self.panel_main, id=wx.ID_ANY, label="RACING",pos=(512,0),size=(512,200))
+		button3 = MyButton(self.panel_main, id=wx.ID_ANY, label="ENERGY",pos=(0,200),size=(512,200))
+		button4 = MyButton(self.panel_main, id=wx.ID_ANY, label="NAVIGATE",pos=(512,200),size=(512,200))
+		button5 = MyButton(self.panel_main, id=wx.ID_ANY, label="PHONE",pos=(0,400),size=(512,200))
+		button6 = MyButton(self.panel_main, id=wx.ID_ANY, label="MEDIA",pos=(512,400),size=(512,200))
 		
-		button1_home = MyButton(self.panel_drive, id=wx.ID_ANY, label="HOME",pos=(256,400))
-		button2_home = MyButton(self.panel_race, id=wx.ID_ANY, label="HOME",pos=(256,400))
-		button3_home = MyButton(self.panel_energy, id=wx.ID_ANY, label="HOME",pos=(256,400))
-		button4_home = MyButton(self.panel_gps, id=wx.ID_ANY, label="HOME",pos=(256,400))
-		button5_home = MyButton(self.panel_phone, id=wx.ID_ANY, label="HOME",pos=(256,400))
-		button6_home = MyButton(self.panel_music, id=wx.ID_ANY, label="HOME",pos=(256,400))
+		button1_home = MyButton(self.panel_drive, id=wx.ID_ANY, label="HOME",pos=(256,500),size=(512,100))
+		button2_home = MyButton(self.panel_race, id=wx.ID_ANY, label="HOME",pos=(256,500),size=(512,100))
+		button3_home = MyButton(self.panel_energy, id=wx.ID_ANY, label="HOME",pos=(256,500),size=(512,100))
+		button4_home = MyButton(self.panel_gps, id=wx.ID_ANY, label="HOME",pos=(256,500),size=(512,100))
+		button5_home = MyButton(self.panel_phone, id=wx.ID_ANY, label="HOME",pos=(256,500),size=(512,100))
+		button6_home = MyButton(self.panel_music, id=wx.ID_ANY, label="HOME",pos=(256,500),size=(512,100))
 
 		
 		button1.Bind(wx.EVT_BUTTON, self.onButton1)
@@ -121,7 +123,6 @@ class MainFrame(wx.Frame):
 		self.panel_phone.Hide()
 		self.panel_gps.Hide()
 		self.panel_music.Hide()
-				
 		self.panel_main.Show()
 	
 		
@@ -148,7 +149,7 @@ class MainPanel(wx.Panel):
 	def __init__(self, *args, **kw):
 		super(MainPanel, self).__init__(*args, **kw) 
 		
-		self.SetBackgroundColour(MAINCOLOR)
+		self.SetBackgroundColour(BACKCOLOR)
 
 
 class DrivePanel(wx.Panel):
@@ -162,18 +163,136 @@ class DrivePanel(wx.Panel):
 		self.SetBackgroundColour(BACKCOLOR)
 		self.Hide()
 
+
+
 		
 class RacePanel(wx.Panel):
 	def __init__(self, *args, **kw):
 		super(RacePanel, self).__init__(*args, **kw)
 		
-		text1 = wx.StaticText(self, -1, "DISTANCE", pos=(0,200), style=wx.ALIGN_CENTRE)
-		text1.Centre(wx.HORIZONTAL)
-		text1.SetFont(wx.Font(20,wx.FONTFAMILY_DEFAULT,wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD))
+		self.SetBackgroundColour(BACKCOLOR)
+		self.Hide()
+
+		self.panel_race_start = RacePanelStart(self, wx.ID_ANY, size=(1024,600), pos=(0,0))
+
+		button_start = MyButton(self, id=wx.ID_ANY, label="START",pos=(256,100),size=(512,200))
+		button_stop = MyButton(self.panel_race_start, id=wx.ID_ANY, label="STOP",pos=(256,500),size=(512,100))
+
+		button_start.Bind(wx.EVT_BUTTON, self.start)
+		button_stop.Bind(wx.EVT_BUTTON, self.stop)
+
+	def start(self, event):
+		self.panel_race_start.Show()
+		self.panel_race_start.on_start()
+
+	def stop(self, event):
+		self.panel_race_start.Hide()
+
+
+class RacePanelStart(wx.Panel):
+	def __init__(self, *args, **kw):
+		super(RacePanelStart, self).__init__(*args, **kw)
 		
 		self.SetBackgroundColour(BACKCOLOR)
 		self.Hide()
-	
+
+		self.timer = wx.Timer(self)
+		self.timer.Start(100)
+		self.Bind(wx.EVT_TIMER, self.update, self.timer)
+		self.time_start = datetime.datetime.now()
+		
+		self.init()
+
+		#self.vbox.Hide()
+		
+		#box_race.Add(self.text1, 1, wx.ALL, 20)
+	def on_start(self):
+		self.time_start = datetime.datetime.now()
+
+
+	def update(self, event):
+
+		self.time_elaps = datetime.datetime.now() - self.time_start
+
+		self.lap_count_v.SetLabel(time.strftime('%S'))
+		self.stopwatch_v.SetLabel(str(self.time_elaps.seconds/3600) + ':' + str("%02d" % ((self.time_elaps.seconds%3600)/60)) + ':' + str("%02d" % (self.time_elaps.seconds%3600)))
+		self.speed_v.SetLabel(time.strftime('%H%M%S'))
+		self.effect_v.SetLabel(time.strftime('%M%S'))
+		self.energy_v.SetLabel(time.strftime('%M%S'))
+		self.laptrip_v.SetLabel(time.strftime('%M%S'))
+
+	def init(self):
+		self.vbox = wx.BoxSizer(wx.HORIZONTAL)
+		self.hbox_1 = wx.BoxSizer(wx.VERTICAL)
+		self.hbox_2 = wx.BoxSizer(wx.VERTICAL)
+		self.hbox_3 = wx.BoxSizer(wx.VERTICAL)
+		
+
+		self.lap_count_l = wx.StaticText(self, -1, 'Counter: ')
+		self.lap_count_v = wx.StaticText(self, -1, time.strftime('%S') )
+		self.lap_count_s = wx.StaticText(self, -1, ' laps')
+		self.stopwatch_l = wx.StaticText(self, -1, 'Timer: ')
+		self.stopwatch_v = wx.StaticText(self, -1, '1:00:00')
+		self.stopwatch_s = wx.StaticText(self, -1, ' h:m:s')
+		self.speed_l = wx.StaticText(self, -1, 'Speed: ')
+		self.speed_v = wx.StaticText(self, -1, time.strftime('%H%M%S'))
+		self.speed_s = wx.StaticText(self, -1, ' km/h')
+		self.effect_l = wx.StaticText(self, -1, 'Effect: ')
+		self.effect_v = wx.StaticText(self, -1, time.strftime('%M%S'))
+		self.effect_s = wx.StaticText(self, -1, ' W')
+		self.energy_l = wx.StaticText(self, -1, 'Energy: ')
+		self.energy_v = wx.StaticText(self, -1, time.strftime('%M%S'))
+		self.energy_s = wx.StaticText(self, -1, ' kW/h')
+		self.laptrip_l = wx.StaticText(self, -1, 'Lap: ')
+		self.laptrip_v = wx.StaticText(self, -1, time.strftime('%M%S'))
+		self.laptrip_s = wx.StaticText(self, -1, ' m')
+
+
+		self.lap_count_l.SetFont(wx.Font(27,wx.FONTFAMILY_DEFAULT,wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD))
+		self.lap_count_v.SetFont(wx.Font(27,wx.FONTFAMILY_DEFAULT,wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD))
+		self.lap_count_s.SetFont(wx.Font(27,wx.FONTFAMILY_DEFAULT,wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD))
+		self.stopwatch_l.SetFont(wx.Font(27,wx.FONTFAMILY_DEFAULT,wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD))
+		self.stopwatch_v.SetFont(wx.Font(27,wx.FONTFAMILY_DEFAULT,wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD))
+		self.stopwatch_s.SetFont(wx.Font(27,wx.FONTFAMILY_DEFAULT,wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD))
+		self.speed_l.SetFont(wx.Font(27,wx.FONTFAMILY_DEFAULT,wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD))
+		self.speed_v.SetFont(wx.Font(27,wx.FONTFAMILY_DEFAULT,wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD))
+		self.speed_s.SetFont(wx.Font(27,wx.FONTFAMILY_DEFAULT,wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD))
+		self.effect_l.SetFont(wx.Font(27,wx.FONTFAMILY_DEFAULT,wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD))
+		self.effect_v.SetFont(wx.Font(27,wx.FONTFAMILY_DEFAULT,wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD))
+		self.effect_s.SetFont(wx.Font(27,wx.FONTFAMILY_DEFAULT,wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD))
+		self.energy_l.SetFont(wx.Font(27,wx.FONTFAMILY_DEFAULT,wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD))
+		self.energy_v.SetFont(wx.Font(27,wx.FONTFAMILY_DEFAULT,wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD))
+		self.energy_s.SetFont(wx.Font(27,wx.FONTFAMILY_DEFAULT,wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD))
+		self.laptrip_l.SetFont(wx.Font(27,wx.FONTFAMILY_DEFAULT,wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD))
+		self.laptrip_v.SetFont(wx.Font(27,wx.FONTFAMILY_DEFAULT,wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD))
+		self.laptrip_s.SetFont(wx.Font(27,wx.FONTFAMILY_DEFAULT,wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD))
+
+		self.hbox_1.Add(self.lap_count_l, 0, wx.ALIGN_LEFT)
+		self.hbox_2.Add(self.lap_count_v, 0, wx.ALIGN_RIGHT)
+		self.hbox_3.Add(self.lap_count_s, 0, wx.ALIGN_LEFT)
+		self.hbox_1.Add(self.stopwatch_l, 0, wx.ALIGN_LEFT)
+		self.hbox_2.Add(self.stopwatch_v, 0, wx.ALIGN_RIGHT)
+		self.hbox_3.Add(self.stopwatch_s, 0, wx.ALIGN_LEFT)
+		self.hbox_1.Add(self.speed_l, 0, wx.ALIGN_LEFT)
+		self.hbox_2.Add(self.speed_v, 0, wx.ALIGN_RIGHT)
+		self.hbox_3.Add(self.speed_s, 0, wx.ALIGN_LEFT)
+		self.hbox_1.Add(self.energy_l, 0, wx.ALIGN_LEFT)
+		self.hbox_2.Add(self.energy_v, 0, wx.ALIGN_RIGHT)
+		self.hbox_3.Add(self.energy_s, 0, wx.ALIGN_LEFT)
+		self.hbox_1.Add(self.effect_l, 0, wx.ALIGN_LEFT)
+		self.hbox_2.Add(self.effect_v, 0, wx.ALIGN_RIGHT)
+		self.hbox_3.Add(self.effect_s, 0, wx.ALIGN_LEFT)
+		self.hbox_1.Add(self.laptrip_l, 0, wx.ALIGN_LEFT)
+		self.hbox_2.Add(self.laptrip_v, 0, wx.ALIGN_RIGHT)
+		self.hbox_3.Add(self.laptrip_s, 0, wx.ALIGN_LEFT)
+
+		self.vbox.Add(self.hbox_1, flag=wx.LEFT | wx.TOP)
+		self.vbox.Add(self.hbox_2, flag=wx.LEFT | wx.TOP)
+		self.vbox.Add(self.hbox_3, flag=wx.LEFT | wx.TOP)
+		
+		self.SetSizer(self.vbox)
+
+		
 		
 class EnergyPanel(wx.Panel):
 	def __init__(self, *args, **kw):
@@ -195,7 +314,7 @@ class PhonePanel(wx.Panel):
 		text1.Centre(wx.HORIZONTAL)
 		text1.SetFont(wx.Font(20,wx.FONTFAMILY_DEFAULT,wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD))
 		
-		box = wx.BoxSizer(wx.HORIZONTAL);
+		box = wx.BoxSizer(wx.HORIZONTAL)
 
 
 
