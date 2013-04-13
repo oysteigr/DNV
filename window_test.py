@@ -219,14 +219,18 @@ class RacePanelStart(wx.Panel):
 		self.init()
 
 		png_track = wx.Image('track.png', wx.BITMAP_TYPE_ANY).ConvertToBitmap()
-		self.picture = wx.StaticBitmap(self,size=(450,300),pos=(550,50))
-		self.picture.SetBitmap(png_track)
+		self.picture_track = wx.StaticBitmap(self,size=(450,300),pos=(550,50))
+		self.picture_track.SetBitmap(png_track)
 		
-		png_ikon = wx.Image('logo_mini.png', wx.BITMAP_TYPE_ANY).ConvertToBitmap()
+		png_icon = wx.Image('logo_mini.png', wx.BITMAP_TYPE_ANY).ConvertToBitmap()
 		self.x_pos = self.get_x_pos()
 		self.y_pos = self.get_y_pos()
-		self.picture = wx.StaticBitmap(self,size=(450,300),pos=(self.x_pos,self.y_pos))
-		self.picture.SetBitmap(png_ikon)
+		self.picture_icon = wx.StaticBitmap(self,size=(450,300),pos=(880,294))
+		self.picture_icon.SetBitmap(png_icon)
+
+		png_outofrange = wx.Image('outofrange.png', wx.BITMAP_TYPE_ANY).ConvertToBitmap()
+		self.picture_range = wx.StaticBitmap(self,size=(450,300),pos=(550,50))
+		self.picture_range.SetBitmap(png_outofrange)
 
 		#self.vbox.Hide()
 		
@@ -238,21 +242,32 @@ class RacePanelStart(wx.Panel):
 		x_px_start = 9.0
 		x_px_end = 432.0
 		x_icon_center = 12.0
+		if(x_cord_current<(x_cord_start-30) or x_cord_current>(x_cord_end+30)):
+			return -1
 		x_pos = 550 + x_px_start - x_icon_center + (x_cord_current - x_cord_start)*((x_px_end-x_px_start)/(x_cord_end-x_cord_start))
 		return x_pos
 
 	def get_y_pos(self):
 		y_cord_start = 88121.0
 		y_cord_end = 88448.0
-		y_cord_current = 88127.0+ randrange(40)
+		y_cord_current = 88127.0
 		y_px_start = 18.0
 		y_px_end = 277.0
 		y_icon_center = 17.0
+		if(y_cord_current<(y_cord_start-30) or y_cord_current>(y_cord_end+30)):
+			return -1
 		y_pos = 300 -((y_px_start - y_icon_center + (y_cord_current - y_cord_start)*((y_px_end-y_px_start)/(y_cord_end-y_cord_start))))
 		return y_pos
 
 	def update_pos(self):
-		self.picture.SetPosition((self.get_x_pos(),self.get_y_pos()))
+		if(self.get_y_pos() == -1 or self.get_x_pos() == -1):
+			self.picture_icon.Hide()
+			self.picture_range.Show()
+			print "dud"
+			return
+		self.picture_range.Hide()
+		self.picture_icon.Show()
+		self.picture_icon.SetPosition((self.get_x_pos(),self.get_y_pos()))
 
 	def on_start(self):
 		self.time_start = datetime.datetime.now()
