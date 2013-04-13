@@ -133,7 +133,6 @@ class TopPanel(wx.Panel):
 		self.SetBackgroundColour(MAINCOLOR)
 
 		png = wx.Image('logo_s.png', wx.BITMAP_TYPE_ANY).ConvertToBitmap()
-		#wx.StaticBitmap(self, -1, png, (10, 5), (png.GetWidth(), png.GetHeight()))
 		self.picture = wx.StaticBitmap(self,size=(1024,168),pos=(0,0))
 		self.picture.SetBitmap(png)
 		
@@ -219,9 +218,42 @@ class RacePanelStart(wx.Panel):
 		
 		self.init()
 
+		png_track = wx.Image('track.png', wx.BITMAP_TYPE_ANY).ConvertToBitmap()
+		self.picture = wx.StaticBitmap(self,size=(450,300),pos=(550,50))
+		self.picture.SetBitmap(png_track)
+		
+		png_ikon = wx.Image('logo_mini.png', wx.BITMAP_TYPE_ANY).ConvertToBitmap()
+		self.x_pos = self.get_x_pos()
+		self.y_pos = self.get_y_pos()
+		self.picture = wx.StaticBitmap(self,size=(450,300),pos=(self.x_pos,self.y_pos))
+		self.picture.SetBitmap(png_ikon)
+
 		#self.vbox.Hide()
 		
 		#box_race.Add(self.text1, 1, wx.ALL, 20)
+	def get_x_pos(self):
+		x_cord_start = 4831.0
+		x_cord_end = 4916.0
+		x_cord_current = 4898.0
+		x_px_start = 9.0
+		x_px_end = 432.0
+		x_icon_center = 12.0
+		x_pos = 550 + x_px_start - x_icon_center + (x_cord_current - x_cord_start)*((x_px_end-x_px_start)/(x_cord_end-x_cord_start))
+		return x_pos
+
+	def get_y_pos(self):
+		y_cord_start = 88121.0
+		y_cord_end = 88448.0
+		y_cord_current = 88127.0+ randrange(40)
+		y_px_start = 18.0
+		y_px_end = 277.0
+		y_icon_center = 17.0
+		y_pos = 300 -((y_px_start - y_icon_center + (y_cord_current - y_cord_start)*((y_px_end-y_px_start)/(y_cord_end-y_cord_start))))
+		return y_pos
+
+	def update_pos(self):
+		self.picture.SetPosition((self.get_x_pos(),self.get_y_pos()))
+
 	def on_start(self):
 		self.time_start = datetime.datetime.now()
 
@@ -231,11 +263,12 @@ class RacePanelStart(wx.Panel):
 		self.time_elaps = datetime.datetime.now() - self.time_start
 
 		self.lap_count_v.SetLabel(time.strftime('%S'))
-		self.stopwatch_v.SetLabel(str(self.time_elaps.seconds/3600) + ':' + str("%02d" % ((self.time_elaps.seconds%3600)/60)) + ':' + str("%02d" % (self.time_elaps.seconds%3600)))
+		self.stopwatch_v.SetLabel(str(self.time_elaps.seconds/3600) + ':' + str("%02d" % ((self.time_elaps.seconds%3600)/60)) + ':' + str("%02d" % (self.time_elaps.seconds%60)))
 		self.speed_v.SetLabel(time.strftime('%H%M%S'))
 		self.effect_v.SetLabel(time.strftime('%M%S'))
 		self.energy_v.SetLabel(time.strftime('%M%S'))
 		self.laptrip_v.SetLabel(time.strftime('%M%S'))
+		self.update_pos()
 
 	def init(self):
 		self.vbox = wx.BoxSizer(wx.HORIZONTAL)
