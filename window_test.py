@@ -58,60 +58,60 @@ class MainFrame(wx.Frame):
 			
 
 		
-		button1 = MyButton(self.panel_main, id=wx.ID_ANY, label="DRIVING",pos=(0,0),size=(512,200))
-		button2 = MyButton(self.panel_main, id=wx.ID_ANY, label="RACING",pos=(512,0),size=(512,200))
-		button3 = MyButton(self.panel_main, id=wx.ID_ANY, label="ENERGY",pos=(0,200),size=(512,200))
-		button4 = MyButton(self.panel_main, id=wx.ID_ANY, label="NAVIGATE",pos=(512,200),size=(512,200))
-		button5 = MyButton(self.panel_main, id=wx.ID_ANY, label="PHONE",pos=(0,400),size=(512,200))
-		button6 = MyButton(self.panel_main, id=wx.ID_ANY, label="MEDIA",pos=(512,400),size=(512,200))
+		drive_button = MyButton(self.panel_main, id=wx.ID_ANY, label="DRIVING",pos=(0,0),size=(512,200))
+		race_button = MyButton(self.panel_main, id=wx.ID_ANY, label="RACING",pos=(512,0),size=(512,200))
+		energy_button = MyButton(self.panel_main, id=wx.ID_ANY, label="ENERGY",pos=(0,200),size=(512,200))
+		navigate_button = MyButton(self.panel_main, id=wx.ID_ANY, label="NAVIGATE",pos=(512,200),size=(512,200))
+		phone_button = MyButton(self.panel_main, id=wx.ID_ANY, label="PHONE",pos=(0,400),size=(512,200))
+		media_button = MyButton(self.panel_main, id=wx.ID_ANY, label="MEDIA",pos=(512,400),size=(512,200))
 		
-		button1_home = MyButton(self.panel_drive, id=wx.ID_ANY, label="HOME",pos=(256,500),size=(512,100))
-		button2_home = MyButton(self.panel_race, id=wx.ID_ANY, label="HOME",pos=(256,500),size=(512,100))
-		button3_home = MyButton(self.panel_energy, id=wx.ID_ANY, label="HOME",pos=(256,500),size=(512,100))
-		button4_home = MyButton(self.panel_gps, id=wx.ID_ANY, label="HOME",pos=(256,500),size=(512,100))
-		button5_home = MyButton(self.panel_phone, id=wx.ID_ANY, label="HOME",pos=(256,500),size=(512,100))
-		button6_home = MyButton(self.panel_music, id=wx.ID_ANY, label="HOME",pos=(256,500),size=(512,100))
+		drive_button_home = MyButton(self.panel_drive, id=wx.ID_ANY, label="HOME",pos=(256,500),size=(512,100))
+		race_button_home = MyButton(self.panel_race, id=wx.ID_ANY, label="HOME",pos=(256,500),size=(512,100))
+		energy_button_home = MyButton(self.panel_energy, id=wx.ID_ANY, label="HOME",pos=(256,500),size=(512,100))
+		navigate_button_home = MyButton(self.panel_gps, id=wx.ID_ANY, label="HOME",pos=(256,500),size=(512,100))
+		phone_button_home = MyButton(self.panel_phone, id=wx.ID_ANY, label="HOME",pos=(256,500),size=(512,100))
+		media_button_home = MyButton(self.panel_music, id=wx.ID_ANY, label="HOME",pos=(256,500),size=(512,100))
 
 		
-		button1.Bind(wx.EVT_BUTTON, self.onButton1)
-		button2.Bind(wx.EVT_BUTTON, self.onButton2)
-		button3.Bind(wx.EVT_BUTTON, self.onButton3)
-		button4.Bind(wx.EVT_BUTTON, self.onButton4)
-		button5.Bind(wx.EVT_BUTTON, self.onButton5)
-		button6.Bind(wx.EVT_BUTTON, self.onButton6)
+		drive_button.Bind(wx.EVT_BUTTON, self.ondrive_button)
+		race_button.Bind(wx.EVT_BUTTON, self.onrace_button)
+		energy_button.Bind(wx.EVT_BUTTON, self.onenergy_button)
+		navigate_button.Bind(wx.EVT_BUTTON, self.onnavigate_button)
+		phone_button.Bind(wx.EVT_BUTTON, self.onphone_button)
+		media_button.Bind(wx.EVT_BUTTON, self.onmedia_button)
 		
-		button1_home.Bind(wx.EVT_BUTTON, self.onButtonHome)
-		button2_home.Bind(wx.EVT_BUTTON, self.onButtonHome)
-		button3_home.Bind(wx.EVT_BUTTON, self.onButtonHome)
-		button4_home.Bind(wx.EVT_BUTTON, self.onButtonHome)
-		button5_home.Bind(wx.EVT_BUTTON, self.onButtonHome)
-		button6_home.Bind(wx.EVT_BUTTON, self.onButtonHome)
+		drive_button_home.Bind(wx.EVT_BUTTON, self.onButtonHome)
+		race_button_home.Bind(wx.EVT_BUTTON, self.onButtonHome)
+		energy_button_home.Bind(wx.EVT_BUTTON, self.onButtonHome)
+		navigate_button_home.Bind(wx.EVT_BUTTON, self.onButtonHome)
+		phone_button_home.Bind(wx.EVT_BUTTON, self.onButtonHome)
+		media_button_home.Bind(wx.EVT_BUTTON, self.onButtonHome)
 	
 		self.Refresh()
 
 #----------------------------------------------------------------------
-	def onButton1(self, event):
+	def ondrive_button(self, event):
 		self.panel_main.Hide()
 		self.panel_drive.Show()
 
 
-	def onButton2(self, event):
+	def onrace_button(self, event):
 		self.panel_main.Hide()
 		self.panel_race.Show()
 
-	def onButton3(self, event):
+	def onenergy_button(self, event):
 		self.panel_main.Hide()
 		self.panel_energy.Show()
 
-	def onButton4(self, event):
-		self.panel_main.Hide()
-		self.panel_phone.Show()
-
-	def onButton5(self, event):
+	def onnavigate_button(self, event):
 		self.panel_main.Hide()
 		self.panel_gps.Show()
 
-	def onButton6(self, event):
+	def onphone_button(self, event):
+		self.panel_main.Hide()
+		self.panel_phone.Show()
+
+	def onmedia_button(self, event):
 		self.panel_main.Hide()
 		self.panel_music.Show()
 
@@ -150,17 +150,21 @@ class MainPanel(wx.Panel):
 		super(MainPanel, self).__init__(*args, **kw) 
 		
 		self.SetBackgroundColour(BACKCOLOR)
+		self.SetForegroundColour(MAINCOLOR)
 
 
 class DrivePanel(wx.Panel):
 	def __init__(self, *args, **kw):
 		super(DrivePanel, self).__init__(*args, **kw)
 		
+		self.SetBackgroundColour(BACKCOLOR)
+		self.SetForegroundColour(MAINCOLOR)
+
 		text1 = wx.StaticText(self, -1, "SPEED", pos=(0,200), style=wx.ALIGN_CENTRE)
 		text1.Centre(wx.HORIZONTAL)
 		text1.SetFont(wx.Font(20,wx.FONTFAMILY_DEFAULT,wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD))
 		
-		self.SetBackgroundColour(BACKCOLOR)
+
 		self.Hide()
 
 
@@ -171,6 +175,7 @@ class RacePanel(wx.Panel):
 		super(RacePanel, self).__init__(*args, **kw)
 		
 		self.SetBackgroundColour(BACKCOLOR)
+		self.SetForegroundColour(MAINCOLOR)
 		self.Hide()
 
 		self.panel_race_start = RacePanelStart(self, wx.ID_ANY, size=(1024,600), pos=(0,0))
@@ -199,6 +204,7 @@ class RacePanelStart(wx.Panel):
 		super(RacePanelStart, self).__init__(*args, **kw)
 		
 		self.SetBackgroundColour(BACKCOLOR)
+		self.SetForegroundColour(MAINCOLOR)
 		self.Hide()
 
 		self.timer = wx.Timer(self)
@@ -302,18 +308,24 @@ class RacePanelStart(wx.Panel):
 class EnergyPanel(wx.Panel):
 	def __init__(self, *args, **kw):
 		super(EnergyPanel, self).__init__(*args, **kw)
-		
+	
+		self.SetBackgroundColour(BACKCOLOR)
+		self.SetForegroundColour(MAINCOLOR)
+
 		text1 = wx.StaticText(self, -1, "ENERGY", pos=(0,200), style=wx.ALIGN_CENTRE)
 		text1.Centre(wx.HORIZONTAL)
 		text1.SetFont(wx.Font(20,wx.FONTFAMILY_DEFAULT,wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD))
 		
-		self.SetBackgroundColour(BACKCOLOR)
+
 		self.Hide()
 	
 		
 class PhonePanel(wx.Panel):
 	def __init__(self, *args, **kw):
 		super(PhonePanel, self).__init__(*args, **kw)
+
+		self.SetBackgroundColour(BACKCOLOR)
+		self.SetForegroundColour(MAINCOLOR)
 		
 		text1 = wx.StaticText(self, -1, "SOLAR", pos=(0,200), style=wx.ALIGN_CENTRE)
 		text1.Centre(wx.HORIZONTAL)
@@ -361,7 +373,7 @@ class PhonePanel(wx.Panel):
 		box.Add(self.panel_plot, 1, wx.ALL, 20)
 		self.SetSizer(box);
 
-		self.SetBackgroundColour(BACKCOLOR)
+
 		self.Hide()
 
 		self.timer = wx.Timer(self)
@@ -381,11 +393,14 @@ class GpsPanel(wx.Panel):
 	def __init__(self, *args, **kw):
 		super(GpsPanel, self).__init__(*args, **kw)
 		
+		self.SetBackgroundColour(BACKCOLOR)
+		self.SetForegroundColour(MAINCOLOR)
+
 		text1 = wx.StaticText(self, -1, "GPS", pos=(0,200), style=wx.ALIGN_CENTRE)
 		text1.Centre(wx.HORIZONTAL)
 		text1.SetFont(wx.Font(20,wx.FONTFAMILY_DEFAULT,wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD))
 		
-		self.SetBackgroundColour(BACKCOLOR)
+
 		self.Hide()
 	
 		
@@ -393,11 +408,14 @@ class MusicPanel(wx.Panel):
 	def __init__(self, *args, **kw):
 		super(MusicPanel, self).__init__(*args, **kw)
 		
+		self.SetBackgroundColour(BACKCOLOR)
+		self.SetForegroundColour(MAINCOLOR)
+
 		text1 = wx.StaticText(self, -1, "MUSIC", pos=(0,200), style=wx.ALIGN_CENTRE)
 		text1.Centre(wx.HORIZONTAL)
 		text1.SetFont(wx.Font(20,wx.FONTFAMILY_DEFAULT,wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD))
 		
-		self.SetBackgroundColour(BACKCOLOR)
+
 		self.Hide()
 		
 # Run the program
