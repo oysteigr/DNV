@@ -131,6 +131,11 @@ class TopPanel(wx.Panel):
 		super(TopPanel, self).__init__(*args, **kw) 
 		self.SetForegroundColour(BACKCOLOR)
 		self.SetBackgroundColour(MAINCOLOR)
+
+		png = wx.Image('logo_s.png', wx.BITMAP_TYPE_ANY).ConvertToBitmap()
+		#wx.StaticBitmap(self, -1, png, (10, 5), (png.GetWidth(), png.GetHeight()))
+		self.picture = wx.StaticBitmap(self,size=(1024,168),pos=(0,0))
+		self.picture.SetBitmap(png)
 		
 		self.timer = wx.Timer(self)
 		self.timer.Start(1000)
