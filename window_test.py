@@ -175,17 +175,22 @@ class RacePanel(wx.Panel):
 
 		self.panel_race_start = RacePanelStart(self, wx.ID_ANY, size=(1024,600), pos=(0,0))
 
-		button_start = MyButton(self, id=wx.ID_ANY, label="START",pos=(256,100),size=(512,200))
-		button_stop = MyButton(self.panel_race_start, id=wx.ID_ANY, label="STOP",pos=(256,500),size=(512,100))
+		button_start = MyButton(self, id=wx.ID_ANY, label="START/RESET",pos=(256,50),size=(512,150))
+		button_resume = MyButton(self, id=wx.ID_ANY, label="RESUME",pos=(256,230),size=(512,150))
+		button_back = MyButton(self.panel_race_start, id=wx.ID_ANY, label="BACK",pos=(256,500),size=(512,100))
 
 		button_start.Bind(wx.EVT_BUTTON, self.start)
-		button_stop.Bind(wx.EVT_BUTTON, self.stop)
+		button_resume.Bind(wx.EVT_BUTTON, self.resume)
+		button_back.Bind(wx.EVT_BUTTON, self.back)
 
 	def start(self, event):
 		self.panel_race_start.Show()
 		self.panel_race_start.on_start()
 
-	def stop(self, event):
+	def resume(self, evnet):
+		self.panel_race_start.Show()
+
+	def back(self, event):
 		self.panel_race_start.Hide()
 
 
