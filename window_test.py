@@ -235,10 +235,16 @@ class RacePanelStart(wx.Panel):
 		#self.vbox.Hide()
 		
 		#box_race.Add(self.text1, 1, wx.ALL, 20)
+	def get_x_cords(self):
+		return 4851.0
+
+	def get_y_cords(self):
+		return 88200.0
+
 	def get_x_pos(self):
 		x_cord_start = 4831.0
 		x_cord_end = 4916.0
-		x_cord_current = 4898.0
+		x_cord_current = self.get_x_cords()
 		x_px_start = 9.0
 		x_px_end = 432.0
 		x_icon_center = 12.0
@@ -250,7 +256,7 @@ class RacePanelStart(wx.Panel):
 	def get_y_pos(self):
 		y_cord_start = 88121.0
 		y_cord_end = 88448.0
-		y_cord_current = 88127.0
+		y_cord_current = self.get_y_cords()
 		y_px_start = 18.0
 		y_px_end = 277.0
 		y_icon_center = 17.0
@@ -259,11 +265,21 @@ class RacePanelStart(wx.Panel):
 		y_pos = 300 -((y_px_start - y_icon_center + (y_cord_current - y_cord_start)*((y_px_end-y_px_start)/(y_cord_end-y_cord_start))))
 		return y_pos
 
+	def update_laps(self):
+		self.laps_timedif = datetime.datetime.now() - self.time_laps_update
+		self.finish_x_pos = 4894.0
+		self.finish_y_pos = 88368.0
+		if self.laps_timedif.seconds > 1:
+			if ( math.fabs(self.get_y_cords() - self.finish_y_pos) < 20.0 and math.fabs(self.get_x_cords() - self.finish_x_pos) < 4.0):	
+				self.laps = self.laps + 1
+				self.time_laps_update = datetime.datetime.now()
+
+
+
 	def update_pos(self):
 		if(self.get_y_pos() == -1 or self.get_x_pos() == -1):
 			self.picture_icon.Hide()
 			self.picture_range.Show()
-			print "dud"
 			return
 		self.picture_range.Hide()
 		self.picture_icon.Show()
@@ -271,29 +287,34 @@ class RacePanelStart(wx.Panel):
 
 	def on_start(self):
 		self.time_start = datetime.datetime.now()
+		self.time_laps_update = datetime.datetime.now()
+		self.laps = 0
 
 
 	def update(self, event):
 
 		self.time_elaps = datetime.datetime.now() - self.time_start
 
-		self.lap_count_v.SetLabel(time.strftime('%S'))
+		self.lap_count_v.SetLabel(time.strftime(str("%02d" % self.laps)))
 		self.stopwatch_v.SetLabel(str(self.time_elaps.seconds/3600) + ':' + str("%02d" % ((self.time_elaps.seconds%3600)/60)) + ':' + str("%02d" % (self.time_elaps.seconds%60)))
 		self.speed_v.SetLabel(time.strftime('%H%M%S'))
 		self.effect_v.SetLabel(time.strftime('%M%S'))
 		self.energy_v.SetLabel(time.strftime('%M%S'))
 		self.laptrip_v.SetLabel(time.strftime('%M%S'))
 		self.update_pos()
+		self.update_laps()
 
 	def init(self):
 		self.vbox = wx.BoxSizer(wx.HORIZONTAL)
 		self.hbox_1 = wx.BoxSizer(wx.VERTICAL)
 		self.hbox_2 = wx.BoxSizer(wx.VERTICAL)
 		self.hbox_3 = wx.BoxSizer(wx.VERTICAL)
-		
+
+		self.laps = 0
+		self.time_laps_update = datetime.datetime.now()
 
 		self.lap_count_l = wx.StaticText(self, -1, 'Counter: ')
-		self.lap_count_v = wx.StaticText(self, -1, time.strftime('%S') )
+		self.lap_count_v = wx.StaticText(self, -1, str("%02d" % self.laps))
 		self.lap_count_s = wx.StaticText(self, -1, ' laps')
 		self.stopwatch_l = wx.StaticText(self, -1, 'Timer: ')
 		self.stopwatch_v = wx.StaticText(self, -1, '1:00:00')
@@ -353,8 +374,15 @@ class RacePanelStart(wx.Panel):
 		self.vbox.Add(self.hbox_1, flag=wx.LEFT | wx.TOP)
 		self.vbox.Add(self.hbox_2, flag=wx.LEFT | wx.TOP)
 		self.vbox.Add(self.hbox_3, flag=wx.LEFT | wx.TOP)
+
+		self.box_left = wx.BoxSizer(wx.HORIZONTAL)
+		self.box_top = wx.BoxSizer(wx.HORIZONTAL)
+
+		self.box_left.Add(self.vbox, flag=wx.LEFT, border=40)
+		self.box_top.Add(self.box_left, flag=wx.TOP, border=80)
 		
-		self.SetSizer(self.vbox)
+		self.SetSizer(self.box_top)
+		#self.vbox.SetPosition(0,0)
 
 		
 		
