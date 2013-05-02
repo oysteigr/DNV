@@ -135,6 +135,30 @@ class TopPanel(wx.Panel):
 		png = wx.Image('logo_s.png', wx.BITMAP_TYPE_ANY).ConvertToBitmap()
 		self.picture = wx.StaticBitmap(self,size=(1024,168),pos=(0,0))
 		self.picture.SetBitmap(png)
+
+		png = wx.Image('bluetooth.png', wx.BITMAP_TYPE_ANY).ConvertToBitmap()
+		self.picture_bluetooth = wx.StaticBitmap(self,size=(1024,168),pos=(950,10))
+		self.picture_bluetooth.SetBitmap(png)
+
+		png = wx.Image('powerdump.png', wx.BITMAP_TYPE_ANY).ConvertToBitmap()
+		self.picture_powerdump = wx.StaticBitmap(self,size=(1024,168),pos=(850,90))
+		self.picture_powerdump.SetBitmap(png)
+
+		png = wx.Image('gps.png', wx.BITMAP_TYPE_ANY).ConvertToBitmap()
+		self.picture_gps = wx.StaticBitmap(self,size=(1024,168),pos=(850,10))
+		self.picture_gps.SetBitmap(png)
+
+		png = wx.Image('solcelle.png', wx.BITMAP_TYPE_ANY).ConvertToBitmap()
+		self.picture_solcelle = wx.StaticBitmap(self,size=(1024,168),pos=(950,90))
+		self.picture_solcelle.SetBitmap(png)
+
+		png = wx.Image('lys.png', wx.BITMAP_TYPE_ANY).ConvertToBitmap()
+		self.picture_lys = wx.StaticBitmap(self,size=(1024,168),pos=(750,10))
+		self.picture_lys.SetBitmap(png)
+
+		png = wx.Image('stoppeklokke.png', wx.BITMAP_TYPE_ANY).ConvertToBitmap()
+		self.picture_stoppeklokke = wx.StaticBitmap(self,size=(1024,168),pos=(750,90))
+		self.picture_stoppeklokke.SetBitmap(png)
 		
 		self.timer = wx.Timer(self)
 		self.timer.Start(1000)
@@ -297,10 +321,10 @@ class RacePanelStart(wx.Panel):
 
 		self.lap_count_v.SetLabel(time.strftime(str("%02d" % self.laps)))
 		self.stopwatch_v.SetLabel(str(self.time_elaps.seconds/3600) + ':' + str("%02d" % ((self.time_elaps.seconds%3600)/60)) + ':' + str("%02d" % (self.time_elaps.seconds%60)))
-		self.speed_v.SetLabel(time.strftime('%H%M%S'))
-		self.effect_v.SetLabel(time.strftime('%M%S'))
-		self.energy_v.SetLabel(time.strftime('%M%S'))
-		self.laptrip_v.SetLabel(time.strftime('%M%S'))
+		self.speed_v.SetLabel(time.strftime("%02d" % self.speed))
+		self.effect_v.SetLabel(time.strftime("%02d" % self.effect))
+		self.energy_v.SetLabel(time.strftime("%04d" % self.energy))
+		self.laptrip_v.SetLabel(time.strftime("%02d" % self.laptrip))
 		self.update_pos()
 		self.update_laps()
 
@@ -313,6 +337,11 @@ class RacePanelStart(wx.Panel):
 		self.laps = 0
 		self.time_laps_update = datetime.datetime.now()
 
+		self.effect = 45;
+		self.energy = 1343;
+		self.laptrip = 1300;
+		self.speed = 23;
+
 		self.lap_count_l = wx.StaticText(self, -1, 'Counter: ')
 		self.lap_count_v = wx.StaticText(self, -1, str("%02d" % self.laps))
 		self.lap_count_s = wx.StaticText(self, -1, ' laps')
@@ -320,16 +349,16 @@ class RacePanelStart(wx.Panel):
 		self.stopwatch_v = wx.StaticText(self, -1, '1:00:00')
 		self.stopwatch_s = wx.StaticText(self, -1, ' h:m:s')
 		self.speed_l = wx.StaticText(self, -1, 'Speed: ')
-		self.speed_v = wx.StaticText(self, -1, time.strftime('%H%M%S'))
+		self.speed_v = wx.StaticText(self, -1, time.strftime("%02d" % self.speed))
 		self.speed_s = wx.StaticText(self, -1, ' km/h')
 		self.effect_l = wx.StaticText(self, -1, 'Effect: ')
-		self.effect_v = wx.StaticText(self, -1, time.strftime('%M%S'))
+		self.effect_v = wx.StaticText(self, -1, time.strftime("%02d" % self.effect))
 		self.effect_s = wx.StaticText(self, -1, ' W')
 		self.energy_l = wx.StaticText(self, -1, 'Energy: ')
-		self.energy_v = wx.StaticText(self, -1, time.strftime('%M%S'))
+		self.energy_v = wx.StaticText(self, -1, time.strftime("%04d" % self.energy))
 		self.energy_s = wx.StaticText(self, -1, ' kW/h')
 		self.laptrip_l = wx.StaticText(self, -1, 'Lap: ')
-		self.laptrip_v = wx.StaticText(self, -1, time.strftime('%M%S'))
+		self.laptrip_v = wx.StaticText(self, -1, time.strftime("%02d" % self.laptrip))
 		self.laptrip_s = wx.StaticText(self, -1, ' m')
 
 
