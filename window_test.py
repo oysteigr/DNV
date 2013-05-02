@@ -60,8 +60,8 @@ class MainFrame(wx.Frame):
 		
 		drive_button = MyButton(self.panel_main, id=wx.ID_ANY, label="DRIVING",pos=(0,0),size=(512,200))
 		race_button = MyButton(self.panel_main, id=wx.ID_ANY, label="RACING",pos=(512,0),size=(512,200))
-		energy_button = MyButton(self.panel_main, id=wx.ID_ANY, label="ENERGY",pos=(0,200),size=(512,200))
-		navigate_button = MyButton(self.panel_main, id=wx.ID_ANY, label="NAVIGATE",pos=(512,200),size=(512,200))
+		energy_button = MyButton(self.panel_main, id=wx.ID_ANY, label="ENERGY CONSUMPTION",pos=(0,200),size=(512,200))
+		navigate_button = MyButton(self.panel_main, id=wx.ID_ANY, label="NAVIGATION",pos=(512,200),size=(512,200))
 		phone_button = MyButton(self.panel_main, id=wx.ID_ANY, label="PHONE",pos=(0,400),size=(512,200))
 		media_button = MyButton(self.panel_main, id=wx.ID_ANY, label="MEDIA",pos=(512,400),size=(512,200))
 		
