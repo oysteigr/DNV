@@ -1,4 +1,6 @@
 import wx
+import wx.lib.newevent
+import wx.lib.masked as masked
 import time
 import os
 import wxmpl
@@ -7,6 +9,8 @@ import matplotlib.mlab as mlab
 import numpy as np
 import math
 import datetime
+import sys
+from multiprocessing import Process, Pipe, Queue, current_process
 from random import randrange
 
 
@@ -15,6 +19,12 @@ MAINCOLOR = '#72CBD2'
 BACKCOLOR = '#0E1A26'
 SCNDCOLOR = '#1B454B'
 CONTCOLOR = '#FBB034'
+
+EventGotCords, EVENT_GOT_CORDS = wx.lib.newevent.NewEvent()
+EventGotSpeed, EVENT_GOT_SPEED = wx.lib.newevent.NewEvent()
+EventGotEffect, EVENT_GOT_EFFECT = wx.lib.newevent.NewEvent()
+
+
 
 def updateGraph(vector, value):
 	vector.append(value)
@@ -318,6 +328,11 @@ class RacePanelStart(wx.Panel):
 		self.timer.Start(1000)
 		self.Bind(wx.EVT_TIMER, self.update, self.timer)
 		self.time_start = datetime.datetime.now()
+
+		self.cord_x = 4851.0
+		self.cord_y = 88200.0
+
+		self.Bind(EVENT_GOT_CORDS, self.get_cords)
 		
 		self.init()
 
@@ -338,16 +353,15 @@ class RacePanelStart(wx.Panel):
 		#self.vbox.Hide()
 		
 		#box_race.Add(self.text1, 1, wx.ALL, 20)
-	def get_x_cords(self):
-		return 4851.0
-
-	def get_y_cords(self):
-		return 88200.0
+	def get_cords(self, event):
+		self.cord_x = event.attr1
+		self.cord_y = event.attr2
+		return 
 
 	def get_x_pos(self):
 		x_cord_start = 4831.0
 		x_cord_end = 4916.0
-		x_cord_current = self.get_x_cords()
+		x_cord_current = self.cord_x
 		x_px_start = 9.0
 		x_px_end = 432.0
 		x_icon_center = 12.0
@@ -359,7 +373,7 @@ class RacePanelStart(wx.Panel):
 	def get_y_pos(self):
 		y_cord_start = 88121.0
 		y_cord_end = 88448.0
-		y_cord_current = self.get_y_cords()
+		y_cord_current = self.cord_y
 		y_px_start = 18.0
 		y_px_end = 277.0
 		y_icon_center = 17.0
@@ -373,7 +387,7 @@ class RacePanelStart(wx.Panel):
 		self.finish_x_pos = 4894.0
 		self.finish_y_pos = 88368.0
 		if self.laps_timedif.seconds > 1:
-			if ( math.fabs(self.get_y_cords() - self.finish_y_pos) < 20.0 and math.fabs(self.get_x_cords() - self.finish_x_pos) < 4.0):	
+			if ( math.fabs(self.cord_y - self.finish_y_pos) < 20.0 and math.fabs(self.cord_x - self.finish_x_pos) < 4.0):	
 				self.laps = self.laps + 1
 				self.time_laps_update = datetime.datetime.now()
 
@@ -552,10 +566,10 @@ class EnergyPanel(wx.Panel):
 		self.axes.axis([0, -60, 0, 60])
 		self.axes.patch.set_facecolor(BACKCOLOR)
 		self.axes.patch.set_edgecolor(MAINCOLOR)
-  		self.axes.spines['bottom'].set_color(MAINCOLOR)
-  		self.axes.spines['top'].set_color(BACKCOLOR)
-  		self.axes.spines['left'].set_color(MAINCOLOR)
-  		self.axes.spines['right'].set_color(BACKCOLOR)
+		self.axes.spines['bottom'].set_color(MAINCOLOR)
+		self.axes.spines['top'].set_color(BACKCOLOR)
+		self.axes.spines['left'].set_color(MAINCOLOR)
+		self.axes.spines['right'].set_color(BACKCOLOR)
 		self.axes.tick_params(axis='x', colors=MAINCOLOR)
 		self.axes.tick_params(axis='y', colors=MAINCOLOR, size=20)
 		
@@ -657,12 +671,10 @@ class GpsPanel(wx.Panel):
 		
 		self.SetBackgroundColour(BACKCOLOR)
 		self.SetForegroundColour(MAINCOLOR)
-
 		
 		png_map = wx.Image('maps1.png', wx.BITMAP_TYPE_ANY).ConvertToBitmap()
 		self.picture_track = wx.StaticBitmap(self,size=(450,300),pos=(0,0))
 		self.picture_track.SetBitmap(png_map)
-		
 
 		self.Hide()
 	
@@ -716,14 +728,69 @@ class PhoneMusicBluetooth(wx.Panel):
 class PhoneMusicRadio(wx.Panel):
 	def __init__(self, *args, **kw):
 		super(PhoneMusicRadio, self).__init__(*args, **kw)
-		
+
 		self.SetBackgroundColour(BACKCOLOR)
 		self.SetForegroundColour(MAINCOLOR)
-		text1 = wx.StaticText(self, -1, "NO SIGNAL FOUND!", pos=(370,200))
-		text1.SetFont(wx.Font(20,wx.FONTFAMILY_DEFAULT,wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD))
+		
+
+		self.mainSizer = wx.BoxSizer(wx.VERTICAL)
+
+
+		text2 = wx.StaticText( self, -1, "24-hour format:")
+		text2.SetFont(wx.Font(27,wx.FONTFAMILY_DEFAULT,wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD))
+		self.time24 = masked.TimeCtrl(self, -1, name="24 hour control", fmt24hr=True, size=(200,200))
+		self.time24.SetFont(wx.Font(57,wx.FONTFAMILY_DEFAULT,wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD))
+		h = self.time24.GetSize().height
+		spin2 = wx.SpinButton( self, -1, wx.DefaultPosition, (-1,h), style=wx.SP_ARROW_KEYS|wx.SP_WRAP)
+		#spin2.SetFont(wx.Font(27,wx.FONTFAMILY_DEFAULT,wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD))
+		self.time24.BindSpinButton( spin2 )
+		self.addWidgets([text2])
+		self.addWidgets([self.time24, spin2])
+
+		self.box_left = wx.BoxSizer(wx.HORIZONTAL)
+		self.box_top = wx.BoxSizer(wx.HORIZONTAL)
+
+		self.box_left.Add(self.mainSizer, flag=wx.LEFT, border=100)
+		self.box_top.Add(self.box_left, flag=wx.TOP, border=100)
+		self.SetSizer(self.box_top)
+
+		button_set_time = MyButton(self, id=wx.ID_ANY, label="SET TIME",pos=(256,300),size=(512,100))
+
+		button_set_time.Bind(wx.EVT_BUTTON, self.SetTime)
 
 		self.Hide()
+
+	def SetTime(self, event):
+		os.system('date -s "%s"' %self.time24.GetValue())
+
+
+	#----------------------------------------------------------------------
+	def addWidgets(self, widgets):
+		""""""
+		sizer = wx.BoxSizer(wx.HORIZONTAL)
+		for widget in widgets:
+			if isinstance(widget, wx.StaticText):
+				sizer.Add(widget, 0, wx.ALL|wx.CENTER, 10),
+			else:
+				sizer.Add(widget, 0, wx.ALL, 10)
+		self.mainSizer.Add(sizer)
 		
+
+
+	
+def ListenCom(conn):
+	p = current_process()
+	print 'Starting:', p.name, p.pid
+	while(True):
+		p = 0
+		#t = time.time()
+		#time.sleep(.5) #.1+~.83 = ~1.33 seconds
+		#num = tempdata()
+		#elapsed = "%.2f" % (time.time() - t)
+		#	conn.send([num, elapsed])
+	p = 0 
+
+
 # Run the program
 if __name__ == "__main__":
 	#os.system('clear')
@@ -732,9 +799,18 @@ if __name__ == "__main__":
 	frame = MainFrame()
 	
 #	frame.Show()
-	
+
+	evt = EventGotCords(attr1=4851.0, attr2=88250.0)
+	wx.PostEvent(frame.panel_race.panel_race_start, evt)
+
+	parent_conn_temp, child_conn_temp = Pipe()            
+	ptemp = Process(name = "ListenCom", target=ListenCom, args=(child_conn_temp,))
+	#ptemp.daemon = True
+	ptemp.start()
+
 	frame.ShowFullScreen(True)
 	cursor = wx.StockCursor(wx.CURSOR_BLANK)
 	frame.SetCursor(cursor)	
 	app.MainLoop()
 	
+
