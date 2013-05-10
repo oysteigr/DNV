@@ -791,6 +791,7 @@ def ListenCom(conn):
 
 	ser=serial.Serial('/dev/ttyUSB0', 9600)
 	while True:
+		receive_data[:] = []
 		initial_byte = ord(ser.read())
 		
 		start_byte = 255
@@ -811,7 +812,10 @@ def ListenCom(conn):
 							receive_data.append(temp_data)
 
 		#need to implement rest of checksum 
-
+		#if got package:
+		print "received data"
+		print receive_data
+		#info = InfoStruct(... data ...)
 
 
 
