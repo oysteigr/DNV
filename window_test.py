@@ -763,7 +763,7 @@ class PhoneMusicRadio(wx.Panel):
 
 	def SetTime(self, event):
 		print "dud"
-	#	os.system('date -s "%s"' %self.time24.GetValue())
+		os.system('date -s "%s"' %self.time24.GetValue())
 
 
 	#----------------------------------------------------------------------
@@ -811,7 +811,7 @@ def ListenCom(conn):
 							receive_data.append(temp_data)
 
 		#need to implement rest of checksum 
-	
+
 
 
 
