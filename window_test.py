@@ -10,6 +10,8 @@ import numpy as np
 import math
 import datetime
 import sys
+import serial
+from collections import namedtuple
 from multiprocessing import Process, Pipe, Queue, current_process
 from random import randrange
 
@@ -24,7 +26,7 @@ EventGotCords, EVENT_GOT_CORDS = wx.lib.newevent.NewEvent()
 EventGotSpeed, EVENT_GOT_SPEED = wx.lib.newevent.NewEvent()
 EventGotEffect, EVENT_GOT_EFFECT = wx.lib.newevent.NewEvent()
 
-
+InfoStruct = namedtuple("InfoStruct", "cord_x cord_y speed effect")
 
 def updateGraph(vector, value):
 	vector.append(value)
@@ -731,7 +733,6 @@ class PhoneMusicRadio(wx.Panel):
 
 		self.SetBackgroundColour(BACKCOLOR)
 		self.SetForegroundColour(MAINCOLOR)
-		
 
 		self.mainSizer = wx.BoxSizer(wx.VERTICAL)
 
@@ -761,7 +762,8 @@ class PhoneMusicRadio(wx.Panel):
 		self.Hide()
 
 	def SetTime(self, event):
-		os.system('date -s "%s"' %self.time24.GetValue())
+		print "dud"
+	#	os.system('date -s "%s"' %self.time24.GetValue())
 
 
 	#----------------------------------------------------------------------
@@ -781,15 +783,48 @@ class PhoneMusicRadio(wx.Panel):
 def ListenCom(conn):
 	p = current_process()
 	print 'Starting:', p.name, p.pid
-	while(True):
-		p = 0
-		#t = time.time()
-		#time.sleep(.5) #.1+~.83 = ~1.33 seconds
-		#num = tempdata()
-		#elapsed = "%.2f" % (time.time() - t)
-		#	conn.send([num, elapsed])
-	p = 0 
 
+
+	last_byte = 255
+	receive_data = []
+
+
+	ser=serial.Serial('/dev/ttyUSB0', 9600)
+	while True:
+		initial_byte = ord(ser.read())
+		
+		start_byte = 255
+		if initial_byte == start_byte:
+			print "start received"
+
+			N = ord(ser.read())
+
+			if N != 255:
+				print "correct length"
+
+				N_1 = ord(ser.read())
+
+				if (start_byte + N + N_1)%256 == 0:
+					for i in range(N):
+						temp_data = ord(ser.read())
+						if not (temp_data == 255 and last_byte == 255):
+							receive_data.append(temp_data)
+
+		#need to implement rest of checksum 
+	
+
+
+
+def sendEvents(frame, info):
+	#InfoStruct = namedtuple("InfoStruct", "speed coords effect")
+	cord_event = EventGotCords(attr1=info.cord_x, attr2=info.cord_y)
+	wx.PostEvent(frame.panel_race.panel_race_start, cord_event)
+
+	speed_event = EventGotCords(attr1=info.speed)
+	wx.PostEvent(frame.panel_race.panel_race_start, speed_event)
+
+	effect_event = EventGotCords(attr1=info.effect)
+	wx.PostEvent(frame.panel_race.panel_race_start, effect_event)
 
 # Run the program
 if __name__ == "__main__":
