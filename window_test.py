@@ -792,10 +792,9 @@ def ListenCom(conn):
 
 	ser=serial.Serial('/dev/ttyUSB0', 9600)
 	while True:
-		time.sleep(0.9)
+		time.sleep(0.3)
 		receive_data[:] = []
 		initial_byte = ord(ser.read())
-		
 		start_byte = 255
 		if initial_byte == start_byte:
 			print "start received"
