@@ -778,7 +778,18 @@ class PhoneMusicRadio(wx.Panel):
 		self.mainSizer.Add(sizer)
 		
 
-
+def ListenComAlt(conn):
+	p = current_process()
+	print 'Starting:', p.name, p.pid
+	while True: 
+		time.sleep(0.3)
+		info = InfoStruct(
+		4894,
+		88368,
+		23,
+		244,
+		23)
+		conn.send(info)
 	
 def ListenCom(conn):
 	p = current_process()
@@ -839,7 +850,7 @@ def ListenCom(conn):
 
 
 def sendEvents(frame, conn):
-	while(True):
+	while True:
 		time.sleep(0.3)
 		if conn.poll():
 			info = conn.recv()
@@ -867,10 +878,11 @@ if __name__ == "__main__":
 	wx.PostEvent(frame.panel_race.panel_race_start, evt)
 
 	parent_conn_temp, child_conn_temp = Pipe()
-	ptemp = Process(name = "ListenCom", target=ListenCom, args=(child_conn_temp,))
+	ptemp = Process(name = "ListenCom", target=ListenComAlt, args=(child_conn_temp,))
 	psend = Process(name = "sendEvents", target=sendEvents, args=(frame, parent_conn_temp))
 	#ptemp.daemon = True
 	ptemp.start()
+	psend.start()
 
 	frame.ShowFullScreen(True)
 	cursor = wx.StockCursor(wx.CURSOR_BLANK)
