@@ -795,6 +795,7 @@ def ListenCom(conn):
 		time.sleep(0.3)
 		receive_data[:] = []
 		initial_byte = ord(ser.read())
+		print initial_byte
 		start_byte = 255
 		if initial_byte == start_byte:
 			print "start received"
