@@ -838,9 +838,10 @@ def ListenCom(conn):
 
 
 def sendEvents(frame, conn):
-	while(true):
-		if conn.poll:
-				
+	while(True):
+		time.sleep(0.3)
+		if conn.poll():
+			info = conn.recv()
 			#InfoStruct = namedtuple("InfoStruct", "speed coords effect")
 			cord_event = EventGotCords(attr1=info.cord_x, attr2=info.cord_y)
 			wx.PostEvent(frame.panel_race.panel_race_start, cord_event)
@@ -866,7 +867,7 @@ if __name__ == "__main__":
 
 	parent_conn_temp, child_conn_temp = Pipe()
 	ptemp = Process(name = "ListenCom", target=ListenCom, args=(child_conn_temp,))
-	psend = Process(name = "sendEvents", target=sendEvents, args=(frame, child_conn_temp))
+	psend = Process(name = "sendEvents", target=sendEvents, args=(frame, parent_conn_temp))
 	#ptemp.daemon = True
 	ptemp.start()
 
