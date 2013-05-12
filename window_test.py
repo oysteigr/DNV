@@ -26,7 +26,7 @@ EventGotCords, EVENT_GOT_CORDS = wx.lib.newevent.NewEvent()
 EventGotSpeed, EVENT_GOT_SPEED = wx.lib.newevent.NewEvent()
 EventGotEffect, EVENT_GOT_EFFECT = wx.lib.newevent.NewEvent()
 
-InfoStruct = namedtuple("InfoStruct", "cord_x cord_y speed effect")
+InfoStruct = namedtuple("InfoStruct", "cord_x cord_y speed effect lights")
 
 def updateGraph(vector, value):
 	vector.append(value)
@@ -782,6 +782,7 @@ class PhoneMusicRadio(wx.Panel):
 	
 def ListenCom(conn):
 	p = current_process()
+	number_of_byte = 9
 	print 'Starting:', p.name, p.pid
 
 
@@ -791,6 +792,7 @@ def ListenCom(conn):
 
 	ser=serial.Serial('/dev/ttyUSB0', 9600)
 	while True:
+		time.sleep(0.1)
 		receive_data[:] = []
 		initial_byte = ord(ser.read())
 		
@@ -811,10 +813,26 @@ def ListenCom(conn):
 						if not (temp_data == 255 and last_byte == 255):
 							receive_data.append(temp_data)
 
+					if receive_data.length == number_of_byte:
+						info = InfoStruct(
+							256 * receive_data[1] + receive_data[0],
+							256 * receive_data[3] + receive_data[2],
+							256 * receive_data[5] + receive_data[4],
+							256 * receive_data[7] + receive_data[6],
+							receive_data[8])
+
+						print "received data"
+						print "gps_x = " + info.cord_x
+						print "gps_y = " + info.cord_y
+						print "speed = " + info.speed
+						print "effect = " + info.effect
+						print "lights = " + info.lights
+
+
+
 		#need to implement rest of checksum 
 		#if got package:
 		print "received data"
-		print receive_data
 		#info = InfoStruct(... data ...)
 
 
