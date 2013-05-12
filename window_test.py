@@ -829,7 +829,7 @@ def ListenCom(conn):
 						print "effect = " + info.effect
 						print "lights = " + info.lights
 
-
+						conn.send(info)
 
 		#need to implement rest of checksum 
 		#if got package:
@@ -837,16 +837,19 @@ def ListenCom(conn):
 
 
 
-def sendEvents(frame, info):
-	#InfoStruct = namedtuple("InfoStruct", "speed coords effect")
-	cord_event = EventGotCords(attr1=info.cord_x, attr2=info.cord_y)
-	wx.PostEvent(frame.panel_race.panel_race_start, cord_event)
+def sendEvents(frame, conn):
+	while(true):
+		if conn.poll:
+				
+			#InfoStruct = namedtuple("InfoStruct", "speed coords effect")
+			cord_event = EventGotCords(attr1=info.cord_x, attr2=info.cord_y)
+			wx.PostEvent(frame.panel_race.panel_race_start, cord_event)
 
-	speed_event = EventGotCords(attr1=info.speed)
-	wx.PostEvent(frame.panel_race.panel_race_start, speed_event)
+			speed_event = EventGotCords(attr1=info.speed)
+			wx.PostEvent(frame.panel_race.panel_race_start, speed_event)
 
-	effect_event = EventGotCords(attr1=info.effect)
-	wx.PostEvent(frame.panel_race.panel_race_start, effect_event)
+			effect_event = EventGotCords(attr1=info.effect)
+			wx.PostEvent(frame.panel_race.panel_race_start, effect_event)
 
 # Run the program
 if __name__ == "__main__":
@@ -861,8 +864,9 @@ if __name__ == "__main__":
 	evt = EventGotCords(attr1=4851.0, attr2=88250.0)
 	wx.PostEvent(frame.panel_race.panel_race_start, evt)
 
-	parent_conn_temp, child_conn_temp = Pipe()            
+	parent_conn_temp, child_conn_temp = Pipe()
 	ptemp = Process(name = "ListenCom", target=ListenCom, args=(child_conn_temp,))
+	psend = Process(name = "sendEvents", target=sendEvents, args=(frame, child_conn_temp))
 	#ptemp.daemon = True
 	ptemp.start()
 
