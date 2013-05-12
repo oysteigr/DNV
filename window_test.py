@@ -838,6 +838,7 @@ if __name__ == "__main__":
 	frame = MainFrame()
 	
 #	frame.Show()
+#kakemann
 
 	evt = EventGotCords(attr1=4851.0, attr2=88250.0)
 	wx.PostEvent(frame.panel_race.panel_race_start, evt)
