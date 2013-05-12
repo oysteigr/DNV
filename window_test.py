@@ -53,7 +53,8 @@ class MyButton(wx.Button):
 				
 class MainFrame(wx.Frame):
 
-	def __init__(self):
+	def __init__(self, con):
+		self.con = con
 		wx.Frame.__init__(self, None, wx.ID_ANY, "MainFrame",size=(1024,768))
 				
 		self.panel_top = TopPanel(self, wx.ID_ANY, size=(1024,168), pos=(0,0))
@@ -98,6 +99,10 @@ class MainFrame(wx.Frame):
 		navigate_button_home.Bind(wx.EVT_BUTTON, self.onButtonHome)
 		phone_button_home.Bind(wx.EVT_BUTTON, self.onButtonHome)
 		media_button_home.Bind(wx.EVT_BUTTON, self.onButtonHome)
+
+		self.timer = wx.Timer(self)
+		self.timer.Start(200)
+		self.Bind(wx.EVT_TIMER, lambda event: self.sendEvents(event, self.con), self.timer)
 	
 		self.Refresh()
 
@@ -136,6 +141,23 @@ class MainFrame(wx.Frame):
 		self.panel_gps.Hide()
 		self.panel_music.Hide()
 		self.panel_main.Show()
+	
+	def sendEvents(self, event, conn):
+		print "checking pipe"
+		if conn.poll():
+			print "got something from pipe"
+			info = conn.recv()
+			print info.speed
+			#InfoStruct = namedtuple("InfoStruct", "speed coords effect")
+			cord_event = EventGotCords(attr1=info.cord_x, attr2=info.cord_y)
+			wx.PostEvent(self.panel_race.panel_race_start, cord_event)
+
+			speed_event = EventGotSpeed(attr1=info.speed)
+			wx.PostEvent(self.panel_race.panel_race_start, speed_event)
+
+			effect_event = EventGotEffect(attr1=info.effect)
+			wx.PostEvent(self.panel_race.panel_race_start, effect_event)
+
 	
 		
 class TopPanel(wx.Panel):
@@ -335,6 +357,7 @@ class RacePanelStart(wx.Panel):
 		self.cord_y = 88200.0
 
 		self.Bind(EVENT_GOT_CORDS, self.get_cords)
+		self.Bind(EVENT_GOT_SPEED, self.get_speed)
 		
 		self.init()
 
@@ -358,6 +381,12 @@ class RacePanelStart(wx.Panel):
 	def get_cords(self, event):
 		self.cord_x = event.attr1
 		self.cord_y = event.attr2
+		print "got cord"
+		return 
+
+	def get_speed(self, event):
+		self.speed = event.attr1
+		print "got speed"
 		return 
 
 	def get_x_pos(self):
@@ -388,7 +417,7 @@ class RacePanelStart(wx.Panel):
 		self.laps_timedif = datetime.datetime.now() - self.time_laps_update
 		self.finish_x_pos = 4894.0
 		self.finish_y_pos = 88368.0
-		if self.laps_timedif.seconds > 1:
+		if self.laps_timedif.seconds > 59:
 			if ( math.fabs(self.cord_y - self.finish_y_pos) < 20.0 and math.fabs(self.cord_x - self.finish_x_pos) < 4.0):	
 				self.laps = self.laps + 1
 				self.time_laps_update = datetime.datetime.now()
@@ -403,9 +432,6 @@ class RacePanelStart(wx.Panel):
 		self.picture_range.Hide()
 		self.picture_icon.Show()
 		self.picture_icon.SetPosition((self.get_x_pos(),self.get_y_pos()))
-
-	def update_speed(self):
-		self.speed = self.speed + randrange(2)
 
 	def update_energy(self):
 		self.energy = self.energy + randrange(6)
@@ -432,7 +458,7 @@ class RacePanelStart(wx.Panel):
 
 		self.lap_count_v.SetLabel(time.strftime(str("%02d" % self.laps)))
 		self.stopwatch_v.SetLabel(str(self.time_elaps.seconds/3600) + ':' + str("%02d" % ((self.time_elaps.seconds%3600)/60)) + ':' + str("%02d" % (self.time_elaps.seconds%60)))
-		self.speed_v.SetLabel(time.strftime("%02d" % (self.speed + randrange(2))))
+		self.speed_v.SetLabel(time.strftime("%02d" % (self.speed)))
 		self.effect_v.SetLabel(time.strftime("%02d" % (self.effect + randrange(4))))
 		self.energy_v.SetLabel(time.strftime("%04d" % self.energy))
 		self.laptrip_v.SetLabel(time.strftime("%02d" % self.laptrip))
@@ -447,7 +473,7 @@ class RacePanelStart(wx.Panel):
 		self.hbox_2 = wx.BoxSizer(wx.VERTICAL)
 		self.hbox_3 = wx.BoxSizer(wx.VERTICAL)
 
-		self.laps = 0
+		self.laps = 1
 		self.time_laps_update = datetime.datetime.now()
 
 		self.effect = 45;
@@ -786,7 +812,7 @@ def ListenComAlt(conn):
 		info = InfoStruct(
 		4894,
 		88368,
-		23,
+		31,
 		244,
 		23)
 		conn.send(info)
@@ -849,44 +875,31 @@ def ListenCom(conn):
 
 
 
-def sendEvents(frame, conn):
-	while True:
-		time.sleep(0.3)
-		if conn.poll():
-			info = conn.recv()
-			#InfoStruct = namedtuple("InfoStruct", "speed coords effect")
-			cord_event = EventGotCords(attr1=info.cord_x, attr2=info.cord_y)
-			wx.PostEvent(frame.panel_race.panel_race_start, cord_event)
 
-			speed_event = EventGotCords(attr1=info.speed)
-			wx.PostEvent(frame.panel_race.panel_race_start, speed_event)
-
-			effect_event = EventGotCords(attr1=info.effect)
-			wx.PostEvent(frame.panel_race.panel_race_start, effect_event)
 
 # Run the program
 if __name__ == "__main__":
 	#os.system('clear')
 	#os.system('setterm -cursor off')
+
+	parent_conn_temp, child_conn_temp = Pipe()
+	ptemp = Process(name = "ListenCom", target=ListenCom, args=(child_conn_temp,))
+	#psend = Process(name = "sendEvents", target=sendEvents, args=(frame, parent_conn_temp))
+	#ptemp.daemon = True
+	ptemp.start()
 	app = wx.App(False)
-	frame = MainFrame()
+	frame = MainFrame(parent_conn_temp)
 	
 #	frame.Show()
 #kakemann
 
-	evt = EventGotCords(attr1=4851.0, attr2=88250.0)
-	wx.PostEvent(frame.panel_race.panel_race_start, evt)
 
-	parent_conn_temp, child_conn_temp = Pipe()
-	ptemp = Process(name = "ListenCom", target=ListenComAlt, args=(child_conn_temp,))
-	psend = Process(name = "sendEvents", target=sendEvents, args=(frame, parent_conn_temp))
-	#ptemp.daemon = True
-	ptemp.start()
-	psend.start()
-
+	#psend.start()
+	#sendEventsDum(frame)
 	frame.ShowFullScreen(True)
 	cursor = wx.StockCursor(wx.CURSOR_BLANK)
 	frame.SetCursor(cursor)	
 	app.MainLoop()
+
 	
 
