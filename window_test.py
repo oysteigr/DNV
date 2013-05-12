@@ -585,7 +585,7 @@ class EnergyPanel(wx.Panel):
 		self.Hide()
 
 		self.timer = wx.Timer(self)
-		self.timer.Start(1000)
+		self.timer.Start(5000)
 		self.Bind(wx.EVT_TIMER, self.update_graph, self.timer)
 
 	def update_graph(self, event):
@@ -791,6 +791,7 @@ def ListenCom(conn):
 
 
 	ser=serial.Serial('/dev/ttyUSB0', 9600)
+	ser.flushInput()
 	while True:
 		time.sleep(0.3)
 		receive_data[:] = []
