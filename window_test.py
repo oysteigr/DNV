@@ -813,7 +813,7 @@ def ListenCom(conn):
 						if not (temp_data == 255 and last_byte == 255):
 							receive_data.append(temp_data)
 
-					if receive_data.length == number_of_byte:
+					if len(receive_data) == number_of_byte:
 						info = InfoStruct(
 							256 * receive_data[1] + receive_data[0],
 							256 * receive_data[3] + receive_data[2],
