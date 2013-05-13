@@ -830,7 +830,7 @@ def ListenCom(conn):
 	ser=serial.Serial('/dev/ttyUSB0', 9600)
 	ser.flushInput()
 	while True:
-		time.sleep(0.3)
+		time.sleep(0.1)
 		receive_data[:] = []
 		initial_byte = ord(ser.read())
 		print initial_byte
@@ -861,11 +861,11 @@ def ListenCom(conn):
 							receive_data[8])
 
 						print "received data"
-						print "gps_x = " + info.cord_x
-						print "gps_y = " + info.cord_y
-						print "speed = " + info.speed
-						print "effect = " + info.effect
-						print "lights = " + info.lights
+						print "gps_x = ", info.cord_x
+						print "gps_y = ", info.cord_y
+						print "speed = ", info.speed
+						print "effect = ", info.effect
+						print "lights = ", info.lights
 
 						conn.send(info)
 
